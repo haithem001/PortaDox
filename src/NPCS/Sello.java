@@ -11,11 +11,16 @@ public class Sello {
 	
 	private int w;
 	private int h;
-	
+
 	private Image IDOL ;
 	private Image Market;
-	private String[] Dialog = {}; 
-	public Sello() {
+    private String[] Dialog = {"Hello! My name is Sello \n wanna buy some swords ?",
+            "I can only allow you to enter \n if you have a sword",
+            "Sorry i cant allow you to enter",
+            "Hmm! Hou got a sword ,i can allow you now",
+            "Be careful!",
+            " "};
+    public Sello() {
 		
 		loadNPC();
 		

@@ -42,7 +42,7 @@ public class Fight1 extends Game implements ActionListener{
 	public void actionPerformed(ActionEvent e) {
 
 		repaint(hud.getX(), hud.getY(), hud.getH(), hud.getW());
-		dude.move(ScreenData, N_BLOCKS_Y, N_BLOCKS_X, BLOCK_SIZE);
+		dude.move(ScreenData, N_BLOCKS_Y, N_BLOCKS_X, BLOCK_SIZE,this.getHeight(),this.getWidth());
 		repaint(dude.getX() - 2, dude.getY() - 2, dude.getWidth() + 3, dude.getHeight() + 3);
 		repaint(0, 0, board.getW() + 3, board.getH() + 3);
 		board.setSelector(dude.getIntoMap());

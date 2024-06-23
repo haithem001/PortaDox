@@ -79,7 +79,7 @@ public class InitGame extends JFrame implements ActionListener{
       	label.setHorizontalAlignment(JLabel.CENTER);
       	label.setVerticalAlignment(JLabel.CENTER);
       	label.setForeground(Color.white);
-      	label.setFont(new Font("PixellettersFull", Font.BOLD, 230));
+      	label.setFont(new Font("PixellettersFull", Font.BOLD, 180));
         label.setBorder(null);
       	label.setVisible(true); 
       
@@ -89,8 +89,7 @@ public class InitGame extends JFrame implements ActionListener{
   		//PLAY BUTTON
 		
 		play.setText("PLAY");
-		play.setFocusable(false); 
-		
+		play.setFocusable(false);
         play.addActionListener(this);
         play.setFont(new Font("PixellettersFull", Font.BOLD, 50));
         play.setBorder(null);

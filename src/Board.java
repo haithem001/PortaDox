@@ -10,11 +10,14 @@ import javax.swing.ImageIcon;
 
 public class Board {
 	private int Selector=1;
+	private int FSelector=0;
 	private int w;
 	private int h;
 	private int x=0;
 	private int y=0;
 	private Image[] image=new Image[2];
+	private Image[] Fimage=new Image[5];
+
 
 	private Maps M= new Maps();
 
@@ -437,19 +440,14 @@ public class Board {
 		while (sc.hasNext()) {
 			str = sc.next();
 			char[] string =str.toString().toCharArray();
-
+			System.out.println(string.length);
 			arr = new short[string.length];
-
-			for(int i=0; i<string.length; i++) {
+			for(int i=0; i<string.length-1; i++) {
 			try {
 			arr[i] = (short) Integer.parseInt(String.valueOf(string[i]));
-
-			}catch (Exception ignored) {
+			}catch (Exception ignored) {}
 
 			}
-			}
-
-
 
 		}
 		return arr;
@@ -459,6 +457,10 @@ public class Board {
 	public int getSelector() {
 		return this.Selector;
 	}
+	public int getFightSelector() {
+		return this.FSelector;
+	}
+
 	public void setSelector(int s) {
 			this.Selector=s;
 			ImageIcon map1_1=new ImageIcon("src/Maps/Map"+Integer.toString(this.Selector)+"_1.png");
@@ -469,17 +471,25 @@ public class Board {
 			h = image[0].getHeight(null);
 	}
 	public void setFightSelector(int s) {
-		this.Selector=s;
-			ImageIcon map1_1=new ImageIcon("src/Maps/Map"+Integer.toString(this.Selector)+"_1.png");
-			ImageIcon map1_2=new ImageIcon("src/Maps/Map"+Integer.toString(this.Selector)+"_2.png");
-			image[0]=map1_1.getImage();
-			image[1]=map1_2.getImage(); 
+			this.Selector=s;
+			ImageIcon map1=new ImageIcon("src/Alien Fight Map/"+Integer.toString(this.FSelector)+"_0.png");
+			ImageIcon map2=new ImageIcon("src/Alien Fight Map/"+Integer.toString(this.FSelector)+"_1.png");
+			ImageIcon map3=new ImageIcon("src/Alien Fight Map/"+Integer.toString(this.FSelector)+"_2.png");
+			ImageIcon map4=new ImageIcon("src/Alien Fight Map/"+Integer.toString(this.FSelector)+"_3.png");
+			ImageIcon map5=new ImageIcon("src/Alien Fight Map/"+Integer.toString(this.FSelector)+"_4.png");
+
+			Fimage[0]=map1.getImage();
+			Fimage[1]=map2.getImage();
+			Fimage[2]=map3.getImage();
+			Fimage[3]=map4.getImage();
+			Fimage[4]=map5.getImage();
+
 			w = image[0].getWidth(null);
 			h = image[0].getHeight(null);
 	}
 	public short[] getleveldata(int s)  {
 		this.Selector=s;
-		return this.importMap(this.getSelector());
+		return this.importMap(this.Selector);
 	}
 
 	public int getX() {
@@ -498,4 +508,7 @@ public class Board {
 	        
 	        return image[p];
 	    }
+	public Image getFightImage(int p){
+		return Fimage[p];
+	}
 }

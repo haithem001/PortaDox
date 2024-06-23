@@ -25,10 +25,17 @@ public class Dude {
 	private boolean interactPressed = false;
 	private boolean walking = true;
 	private int intomap = 1;
-	private int intofight = 0;
+	private int intofight = 1;
+	private boolean GameOrFight=true;
 	private Image[] WRIGHT = new Image[2];
 	private Image[] WLEFT = new Image[2];
+	private int Velocity = 10;
+	public boolean JUMP = false;
+	public boolean on_ground = true;
+	private int jump_height = 15;
 
+
+	private boolean Quit=false;
 	private Image[] Climb = new Image[4];
 	private Image[] Swalk = new Image[2];
 	private Image[] SwalkL = new Image[2];
@@ -74,7 +81,9 @@ public class Dude {
 		h = WRIGHT[0].getHeight(null);
 
 	}
-
+	public boolean isQuit() {
+		return Quit;
+	}
 	public int getdx() {
 
 		return this.dx;
@@ -148,14 +157,14 @@ public class Dude {
 	public void setTalkmessage(boolean pushTalk){
 		this.pushTalk=pushTalk;
 	}
-	
+
 
 	public void setInteract(boolean inter) {
 			this.interact = inter;
-		
-			
-		
-		
+
+
+
+
 	}
 
 	public void setDark(boolean dark) {
@@ -199,20 +208,25 @@ public class Dude {
 
 				if (stopwalk == true) {
 
-					return (dark == false) ? WRIGHT[p] : Swalk[p];
+					return (!dark) ? WRIGHT[p] : Swalk[p];
 				} else {
-					return (dark == false) ? WLEFT[p] : SwalkL[p];
+					return (!dark) ? WLEFT[p] : SwalkL[p];
 				}
 
 			}
 
 		}
-
 		return (stopwalk == true) ? WRIGHT[dx] : WLEFT[dx];
-
 	}
 
-	public void move(short[] ScreenData, int nblocks_x, int nblocks_y, int blocksize) {
+	public boolean isPushTalk() {
+		return pushTalk;
+	}
+
+	public boolean isGameOrFight() {
+		return GameOrFight;
+	}
+	private void PixelsCheck(short[] ScreenData, int nblocks_x, int nblocks_y, int blocksize,int H,int W){
 		System.out.printf("(%d,%d)\n)",this.x, this.y);
 		int pos, Npos, Ppos, Rpos, Upos, UP, LEFT, RIGHT, DOWN;
 		int NextX, NextY, PrevX, PrevY;
@@ -224,6 +238,7 @@ public class Dude {
 		LEFT = this.x - blocksize;
 		DOWN = this.y + blocksize;
 		UP = this.y - (dy * blocksize);
+
 		if (this.x % blocksize == 0 && this.y % blocksize == 0) {
 
 			pos = (int) (this.x / blocksize) + nblocks_y * (int) (this.y / blocksize);
@@ -233,41 +248,50 @@ public class Dude {
 
 			ch = ScreenData[pos];
 			Nch = ScreenData[Npos];
-
 			Uch = ScreenData[Upos];
 			Rch = ScreenData[Rpos];
 			System.out.println("(" + this.x + "," + this.y + ")");
 			System.out.println("pos: " + pos);
 			System.out.println("Nch: " + Nch);
 			System.out.println("ch: " + (ch & 4));
-			if (ch != 0) {
+			if ((ch & 1) == 1 && (ch != 0) && (Nch != 0)) {
+				this.x = this.x + (dx * blocksize);
+				this.y = this.y + (dy * blocksize);
+				intofight++;
+				walking=true;
+				interact = false;
+				interactPressed=false;
+				pushTalk=false;
+				GameOrFight=false;
 
-				if ((ch & 4) == 4 && (ch != 0) && (Nch != 0)) {
-					walking = true;
-					interact = false;
-					climbing = false;
-					pushTalk=false;
-					interactPressed=false;
+			}
+			if ((ch & 4) == 4 && (ch != 0) && Nch != 0) {
+				walking = true;
+				interact = false;
+				climbing = false;
+				pushTalk=false;
+				interactPressed=false;
+				GameOrFight=true;
 
-					if ((intomap == 6 || intomap == 7) && Rch == 0) {
-						this.x = this.x + (2 * dx * blocksize);
-						this.y = this.y - (dx * blocksize);
-					} else {
-						this.x = this.x + (dx * blocksize);
-						this.y = this.y + (dy * blocksize);
-					}
-
+				if ((intomap == 6 || intomap == 7) && Rch == 0) {
+					this.x = this.x + (2 * dx * blocksize);
+					this.y = this.y - (dx * blocksize);
+				} else {
+					this.x = this.x + (dx * blocksize);
+					this.y = this.y + (dy * blocksize);
 				}
 
 			}
-			if ((ch & 1) == 1 && (ch != 0) && (Nch != 0)) {
-				intofight=1;
-				walking=true;
-				this.x = this.x + (dx * blocksize);
-				this.y = this.y + (dy * blocksize);
-			}
-			
+
+
+
+
 			if ((ch & 5) == 5 && (ch != 0) && (Nch != 0)) {
+				interact = false;
+				pushTalk=false;
+				interactPressed=false;
+				GameOrFight=true;
+
 				if (intomap == 1) {
 					intomap++;
 					this.x = 24;
@@ -308,12 +332,15 @@ public class Dude {
 					intomap++;
 					this.x=432;
 					this.y=336;
-				
+
 				}
 
 
 			}
 			if ((ch & 6) == 6 && (ch != 0) && (Nch != 0)) {
+				interact = false;
+				interactPressed=false;
+				pushTalk=false;
 				if (intomap == 2) {
 					this.x = 720;
 					intomap--;
@@ -339,7 +366,7 @@ public class Dude {
 
 				}
 				if (intomap == 8) {
-					this.x = 408;
+					this.x = 420;
 					this.y = 156;
 					intomap = 7;
 					dark=true;
@@ -352,7 +379,9 @@ public class Dude {
 				}
 
 			}
+
 			if ((ch & 2) == 2 && (ch != 0) && (Nch != 0)) {
+
 				this.x = this.x + (dx * blocksize);
 				this.y = this.y + (dy * blocksize);
 				if(!interactPressed) {
@@ -362,9 +391,12 @@ public class Dude {
 				}
 				if (interactPressed) {
 					interact = true;
-					pushTalk=false;
+
 				}
-				
+				if (pushTalk==false){
+					interact=false;
+				}
+
 			}
 			if ((ch & 3) == 3 && (ch != 0) && (Nch != 0)) {
 				climbing = true;
@@ -380,6 +412,8 @@ public class Dude {
 				if ((Nch & 6) == 6) {
 					if (intomap == 5) {
 
+						interact = false;
+						interactPressed=false;
 						this.y = 480;
 						intomap--;
 					}
@@ -387,11 +421,47 @@ public class Dude {
 					this.y = this.y + (dy * blocksize);
 				}
 
-			}
+
+
 		}
+		}
+	}
+	public void move(short[] ScreenData, int nblocks_x, int nblocks_y, int blocksize,int H,int W) {
+
+			if (GameOrFight){
+				PixelsCheck( ScreenData,  nblocks_x,  nblocks_y,  blocksize, H, W);
+
+			}
+			else{
+				System.out.println(this.x+" , "+this.y);
+				this.x = this.x + dx * 12;
+				if (this.y + this.h < 300) {
+					this.Velocity += 1;
+
+					y += this.Velocity;
+
+				} else {
+					on_ground = true;
+				}
+
+				if (this.JUMP) {
+					this.on_ground = false;
+					this.JUMP = false;
+
+					this.Velocity = -this.jump_height;
+					this.y += Velocity;
+
+
+				}
+
+
+			}
+
 
 	}
-
+	public void setPushTalk(boolean x){
+		this.pushTalk=x;
+	}
 	public void keyPressed(KeyEvent e) {
 
 		int key = e.getKeyCode();
@@ -417,6 +487,14 @@ public class Dude {
 		if (key == KeyEvent.VK_F) {
 			interactPressed = true;
 
+		}
+		if (key == KeyEvent.VK_SPACE) {
+			JUMP=true;
+
+		}
+		if
+		(key==KeyEvent.VK_ESCAPE){
+			Quit=true;
 		}
 	}
 
@@ -447,5 +525,4 @@ public class Dude {
 			stopwalk = true;
 		}
 	}
-
 }

@@ -18,7 +18,7 @@ public class Items extends JComponent{
 				
 				{	new Item(1,10,0,0,false,true,x,y),
 					new Item(60,20,0,0,false,true,205,y),
-					new Item(40,0,20,0,false,true,160,90),
+					new Item(40,0,20,0,false,true,240,y),
 					new Item(0,0,0,0,false,false,x+240,y),
 					new Item(0,0,0,0,false,false,x+320,y),
 					new Item(0,0,0,0,false,false,x+400,y),
@@ -85,9 +85,9 @@ public class Items extends JComponent{
 		public int getItemY(int i,int j) {
 			return list_items[i][j].getY();
 		}
-		public void setItemXY(int i,int j ,int x,int y) {
-			list_items[i][j].setX(x);
-			list_items[i][j].setY(y);
+		public void setItemXY(int i,int j ,int a,int b) {
+			list_items[i][j].setX(a);
+			list_items[i][j].setY(b);
 		}
 		
 		public int getY() {
