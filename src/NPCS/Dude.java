@@ -398,7 +398,7 @@ public class Dude {
 				}
 
 			}
-			if ((ch & 3) == 3 && (ch != 0) && (Nch != 0)) {
+			if ((ch & 9) == 9 && (ch != 0) && (Nch != 0)) {
 				climbing = true;
 				walking = false;
 				pushTalk=false;
@@ -417,13 +417,9 @@ public class Dude {
 						this.y = 480;
 						intomap--;
 					}
-
 					this.y = this.y + (dy * blocksize);
 				}
-
-
-
-		}
+			}
 		}
 	}
 	public void move(short[] ScreenData, int nblocks_x, int nblocks_y, int blocksize,int H,int W) {
@@ -435,12 +431,14 @@ public class Dude {
 			else{
 				System.out.println(this.x+" , "+this.y);
 				this.x = this.x + dx * 12;
-				if (this.y + this.h < 300) {
+				if (this.y + this.h < 540) {
 					this.Velocity += 1;
 
 					y += this.Velocity;
+					this.JUMP = false;
 
 				} else {
+
 					on_ground = true;
 				}
 
@@ -451,13 +449,8 @@ public class Dude {
 					this.Velocity = -this.jump_height;
 					this.y += Velocity;
 
-
 				}
-
-
 			}
-
-
 	}
 	public void setPushTalk(boolean x){
 		this.pushTalk=x;
@@ -507,20 +500,20 @@ public class Dude {
 			stopwalk = true;
 		}
 
-		if (key == KeyEvent.VK_D) {
+		else if (key == KeyEvent.VK_D) {
 			dx = 0;
 			stopwalk = true;
 		}
-		if (key == KeyEvent.VK_F) {
+		else if (key == KeyEvent.VK_F) {
 
 
 		}
-		if (key == KeyEvent.VK_Z) {
+		else if (key == KeyEvent.VK_Z) {
 			dy = 0;
 			stopwalk = true;
 		}
 
-		if (key == KeyEvent.VK_S) {
+		else if (key == KeyEvent.VK_S) {
 			dy = 0;
 			stopwalk = true;
 		}

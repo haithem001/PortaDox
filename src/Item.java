@@ -65,7 +65,9 @@ public class Item extends JComponent{
 	}
 		
 
-	
+	public void setExist(boolean b){
+		this.exist=b;
+	}
 
 	
 	public boolean isExisted() {

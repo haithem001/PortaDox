@@ -19,8 +19,15 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 
 public class Game extends JPanel implements ActionListener {
-	private volatile int screenX;
-	private volatile int screenY;
+	private int MouseX;
+	private int MouseY;
+	private int deltaX,deltaY;
+	private int offsetX = 0;
+	private int offsetY = 0;
+	private int savedX,savedY=-1;
+	private boolean dragging = false;
+	private int selected_item_i,selected_item_j=-1;
+	private boolean Pressed=false;
 	private InteractionPanel faces ;
 	private Timer timer;
 	private Animations anim;
@@ -68,7 +75,6 @@ public class Game extends JPanel implements ActionListener {
 		initMap();
 
 	}
-
 	public void initMap() {
 		ScreenData = new short[N_BLOCKS_X * N_BLOCKS_Y];
 
@@ -82,11 +88,8 @@ public class Game extends JPanel implements ActionListener {
 		ScreenData=Data;
 
 	}
-
 	public void initGame() {
-	
-		
-		
+
 		this.addKeyListener(new TAdapter());
 		this.setBackground(Color.black);
 		this.setFocusable(true);
@@ -122,7 +125,6 @@ public class Game extends JPanel implements ActionListener {
 
 		MouseEvents();
 	}
-
 	private void doAnim(int AnimCount) {
 			dudeAnimCount--;
 			if (dudeAnimCount <= 0) {
@@ -133,7 +135,6 @@ public class Game extends JPanel implements ActionListener {
 				}
 			}
 	}
-
 	private void dodialogAnim() {
 		if (dude.getInteract()) {
 			dialogueAnimCount--;
@@ -151,7 +152,6 @@ public class Game extends JPanel implements ActionListener {
 		}
 
 	}
-
 	private void MapAnim() {
 		if (GameOrFight){
 			mapAnimCount--;
@@ -182,7 +182,6 @@ public class Game extends JPanel implements ActionListener {
 
 
 	}
-
 	@Override
 	public void paintComponent(Graphics g) {
 		boolean zoomer =true;
@@ -275,136 +274,18 @@ public class Game extends JPanel implements ActionListener {
 		
 	}
 
-	private void DrawArea(Graphics2D g2d) {
-
-		if (solidarea != null) {
-
-			Color c = new Color(69, 66, 68);
-			g2d.setColor(c);
-			g2d.fillRect(612, 200, (int) dude.getWidth() / 2 - 4, (int) dude.getHeight() * 2 - 5);
-
-		}
-	}
-
-	private void MouseEvents() {
-		this.addMouseListener(new MouseListener() {
-
-			@Override
-			public void mousePressed(MouseEvent e) {
-
-				int x = e.getX();
-				int y = e.getY();
-				if (hud.getX() + hud.getW() - 15 >= x && x >= hud.getX() + hud.getW() - 75 && y >= hud.getY() + 11
-						&& y <= hud.getY() + 81 && hud.GetInventoryOpen() == false) {
-					hud.SetInventoryOpen(true);
-				} else if (hud.getX() + hud.getW() - 15 >= x && x >= hud.getX() + hud.getW() - 75
-						&& y >= hud.getY() + 11 && y <= hud.getY() + 81 && hud.GetInventoryOpen() == true) {
-					hud.SetInventoryOpen(false);
-				}
-				if (hud.GetInventoryOpen() == true) {
-					if (inventory.items.getItemX(0, 0) < x + 20 && inventory.items.getItemX(0, 0)  > x +70 ) {
-						if (inventory.items.getItemY(0, 0) < y + 20 && inventory.items.getItemY(0, 0)  > y+70) {
-
-							screenX = e.getXOnScreen();
-							screenY = e.getYOnScreen();
-							inventory.items.setItemXY(0, 0, screenX, screenY);
-						}
-					}
-					else if (inventory.items.getItemX(0, 1) < x + 100 && inventory.items.getItemX(0, 1) + 150 > x) {
-						if (inventory.items.getItemY(0, 1) < y + 20 && inventory.items.getItemY(0, 1) + 70 > y) {
-							
-							screenX = e.getXOnScreen();
-							screenY = e.getYOnScreen();
-							inventory.items.setItemXY(0, 1, x, y);
-						}
-					}
-				}
-				
-
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				final Point pos = e.getPoint();
-				int x = pos.x;
-				int y = pos.y;
-
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				int x = e.getX();
-				int y = e.getY();
-
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent e) {
-
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
-				int x = e.getX();
-				int y = e.getY();
-				if (hud.getX() + hud.getW() - 15 >= x && x >= hud.getX() + hud.getW() - 75 && y >= hud.getY() + 11
-						&& y <= hud.getY() + 81) {
-					hud.SetInventoryOpen(false);
-				}
-
-			}
-
-		});
-		this.addMouseMotionListener(new MouseMotionListener() {
-
-			@Override
-			public void mouseDragged(MouseEvent e) {
-				int x = e.getX();
-				int y = e.getY();
-				int deltaX = e.getXOnScreen() - screenX + inventory.items.getX();
-				int deltaY = e.getYOnScreen() - screenY + inventory.items.getY();
-				if (hud.GetInventoryOpen() == true) {
-					if (inventory.items.getItemX(0, 0) < x + 20 && inventory.items.getItemX(0, 0) + 50 > x) {
-						if (inventory.items.getItemY(0, 0) < y + 20 && inventory.items.getItemY(0, 0) + 40 > y) {
-
-							inventory.items.setItemXY(0, 0, deltaX, deltaY);
-
-							System.out.println("{" + deltaX + ',' + deltaY + "}");
-
-						}
-					}
-					 if (inventory.items.getItemX(0, 1) < x + 100 && inventory.items.getItemX(0, 1) + 100 > x) {
-						if (inventory.items.getItemY(0, 1) < y + 20 && inventory.items.getItemY(0, 1) + 40 > y) {
-
-							inventory.items.setItemXY(0, 1, deltaX, deltaY);
-
-							System.out.println("{" + deltaX + ',' + deltaY + "}");
-
-						}
-					}
-					
-				}
-
-			}
-
-			@Override
-			public void mouseMoved(MouseEvent e) {
-
-			}
-
-		});
-	}
 
 	private void DrawInventoryItems(Graphics2D g2d) {
 
-		
+
 		g2d.drawImage(inventory.items.getItemImage(0, 0), inventory.items.getItemX(0, 0),
 				inventory.items.getItemY(0, 0), this);
 		g2d.drawImage(inventory.items.getItemImage(0, 1), inventory.items.getItemX(0, 1),
 				inventory.items.getItemY(0, 1), this);
+		g2d.drawImage(inventory.items.getItemImage(0, 2), inventory.items.getItemX(0, 2),
+				inventory.items.getItemY(0, 2), this);
 
 	}
-
 	private void DrawHUD(Graphics2D g2d) {
 
 		// HUD placement
@@ -575,7 +456,16 @@ public class Game extends JPanel implements ActionListener {
 
 
 	}
+	private void DrawArea(Graphics2D g2d) {
 
+		if (solidarea != null) {
+
+			Color c = new Color(69, 66, 68);
+			g2d.setColor(c);
+			g2d.fillRect(612, 200, (int) dude.getWidth() / 2 - 4, (int) dude.getHeight() * 2 - 5);
+
+		}
+	}
 
 	private void DrawBoard(Graphics2D g2d) {
 		if (!GameOrFight){
@@ -734,5 +624,141 @@ public class Game extends JPanel implements ActionListener {
 		}
 
 	}
+	private void MouseEvents() {
+		this.addMouseListener(new MouseListener() {
 
+			@Override
+			public void mousePressed(MouseEvent e) {
+				Point pos = e.getPoint();
+				int x = pos.x -60;
+				int y = pos.y -60;
+
+
+				if (hud.getX() + hud.getW() - 15 >= x && x >= hud.getX() + hud.getW() - 75 && y >= hud.getY() + 11
+						&& y <= hud.getY() + 81 && !hud.GetInventoryOpen()) {
+					hud.SetInventoryOpen(true);
+				} else if (hud.getX() + hud.getW() - 15 >= x && x >= hud.getX() + hud.getW() - 75
+						&& y >= hud.getY() + 11 && y <= hud.getY() + 81 && hud.GetInventoryOpen()) {
+					hud.SetInventoryOpen(false);
+				}
+				if (hud.GetInventoryOpen()) {
+					for (int i = 0; i < 7; i++) { // Assuming `getRows()` gives the number of rows
+						for (int j = 0; j < 4; j++) { // Assuming `getColumns()` gives the number of columns
+							int itemX = inventory.items.getItemX(i, j);
+							int itemY = inventory.items.getItemY(i, j);
+
+							// Check if the mouse is within the item's bounds with a 60 pixel buffer
+							if (itemX - 60 < x && itemX + 50 > x && itemY - 60 < y && itemY + 50 > y) {
+								offsetX = x - itemX;
+								offsetY = y - itemY;
+								savedX = itemX;
+								savedY = itemY;
+								dragging = true;
+								selected_item_i = i;
+								selected_item_j = j;
+								inventory.items.ItemExistence(i,j,false);
+
+								break;
+							}
+						}
+						if (dragging) {
+							break;
+						}
+					}
+				}
+
+
+			}
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				final Point pos = e.getPoint();
+				int x = pos.x;
+				int y = pos.y;
+
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+
+				dragging = false;
+				Item choosen=inventory.items.findClosestItem(MouseX,MouseY);
+				if (choosen !=null){
+					inventory.items.setItemXY(selected_item_i, selected_item_j, choosen.getX(), choosen.getY());
+
+				}
+				else{
+					inventory.items.setItemXY(selected_item_i, selected_item_j, savedX, savedY);
+				}
+				inventory.items.ItemExistence(selected_item_i,selected_item_j,true);
+
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				int x = e.getX();
+				int y = e.getY();
+				if (hud.getX() + hud.getW() - 15 >= x && x >= hud.getX() + hud.getW() - 75 && y >= hud.getY() + 11
+						&& y <= hud.getY() + 81) {
+					hud.SetInventoryOpen(false);
+				}
+
+			}
+
+		});
+		this.addMouseMotionListener(new MouseMotionListener() {
+
+
+			@Override
+			public void mouseDragged(MouseEvent e) {
+
+//				deltaX = e.getXOnScreen() + inventory.items.getX();
+//				deltaY = e.getYOnScreen() + inventory.items.getY();
+//				if (hud.GetInventoryOpen()) {
+//					if (inventory.items.getItemX(0, 0) <  x && inventory.items.getItemX(0, 0) + 100  > x) {
+//						if (inventory.items.getItemY(0, 0) < y && inventory.items.getItemY(0, 0) + 100 > y ) {
+
+
+							if (dragging) {
+								final Point pos = e.getPoint();
+								int x = pos.x;
+								int y = pos.y;
+								x-=60;
+								y-=60;
+								inventory.items.setItemXY(selected_item_i, selected_item_j, x - offsetX, y - offsetY);
+								MouseX= Math.abs(x - offsetX) ;
+								MouseY= Math.abs( y - offsetY );
+
+							}
+//
+//							System.out.println("{" + deltaX + ',' + deltaY + "}");
+//
+//						}
+//					}
+//					else if (inventory.items.getItemX(0, 1) < x  && inventory.items.getItemX(0, 1) + 100 > x) {
+//						if (inventory.items.getItemY(0, 1) < y  && inventory.items.getItemY(0, 1) + 100 > y) {
+//
+//							inventory.items.setItemXY(0, 1, deltaX, deltaY);
+//
+//							System.out.println("{" + deltaX + ',' + deltaY + "}");
+//
+//						}
+//					}
+//
+//				}
+
+			}
+
+			@Override
+			public void mouseMoved(MouseEvent e) {
+
+			}
+
+		});
+	}
 }

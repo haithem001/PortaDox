@@ -9,6 +9,8 @@ import javax.swing.JPanel;
 public class Items extends JComponent{
 		private int x=125;
 		private int y=135;
+		private int gapX=80;
+		private int gapY=80;
 		private int w;
 		private int h;
 		private int rows=4;
@@ -16,21 +18,25 @@ public class Items extends JComponent{
 		private Item[][] list_items ={
 				
 				
-				{	new Item(1,10,0,0,false,true,x,y),
+				{
 					new Item(60,20,0,0,false,true,205,y),
-					new Item(40,0,20,0,false,true,240,y),
-					new Item(0,0,0,0,false,false,x+240,y),
-					new Item(0,0,0,0,false,false,x+320,y),
-					new Item(0,0,0,0,false,false,x+400,y),
-					new Item(0,0,0,0,false,false,x+480,y)}
+					new Item(40,0,20,0,false,true,205+gapX,y),
+					new Item(0,0,0,0,false,false,205+2*gapX,y),
+					new Item(0,0,0,0,false,false,205+3*gapX,y),
+					new Item(0,0,0,0,false,false,205+4*gapX,y),
+					new Item(0,0,0,0,false,false,205+5*gapX,y),
+					new Item(1,10,0,0,false,true,205+6*gapX,y),
+				}
+
 				,{
-					new Item(0,0,0,0,false,false,x,y),
-					new Item(0,0,0,0,false,false,40,y),
-					new Item(0,0,0,0,false,false,x+80,y),
-					new Item(0,0,0,0,false,false,x+120,y),
-					new Item(0,0,0,0,false,false,x+160,y),
-					new Item(0,0,0,0,false,false,x+200,y),
-					new Item(0,0,0,0,false,false,x+240,y)
+
+				new Item(60,20,0,0,false,true,205,y),
+				new Item(40,0,20,0,false,true,205+gapX  ,y+gapX  ),
+				new Item(0,0,0,0,false,false,205 +2*gapX,y+2*gapX),
+				new Item(0,0,0,0,false,false,205 +3*gapX,y+3*gapX),
+				new Item(0,0,0,0,false,false,205 +4*gapX,y+4*gapX),
+				new Item(0,0,0,0,false,false,205 +5*gapX,y+5*gapX)
+
 				}
 				,{
 					new Item(0,0,0,0,false,false,x,y),
@@ -54,7 +60,32 @@ public class Items extends JComponent{
 				 
 				
 		};
-		
+
+	public  Item findClosestItem( int targetX, int targetY) {
+		Item closestItem = null;
+		double minDistance = Double.MAX_VALUE;
+
+
+		for (Item[] row : list_items) {
+			for (Item item : row) {
+				int itemWidth = item.getW();
+				int itemLength = item.getH();
+				int centerX = item.getX() + itemWidth / 2;
+				int centerY = item.getY() + itemLength / 2;
+				double distance = Math.sqrt(Math.pow(targetX - centerX, 2) + Math.pow(targetY - centerY, 2));
+				if (distance < minDistance) {
+					minDistance = distance;
+					closestItem = item;
+				}
+			}
+		}
+		if (minDistance < 50) {
+			return closestItem;
+
+		}
+		return null;
+	}
+
 		Items(){
 			
 		
@@ -122,6 +153,9 @@ public class Items extends JComponent{
 			 return sum;
 		
 		
+		}
+		public void ItemExistence( int i, int j , boolean b){
+			list_items[i][j].setExist(b);
 		}
 		
 }
