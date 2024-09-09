@@ -2,14 +2,13 @@ package NPCS;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
-import java.awt.geom.AffineTransform;
 
 import javax.swing.ImageIcon;
 
 public class Dude {
-
-	private int dx;
-	private int dy;
+	private boolean Attacking=false;
+	private int dx=0,savedX;
+	private int dy,savedY;
 	public int x;
 	public int y;
 	private boolean pushTalk =false;
@@ -25,10 +24,13 @@ public class Dude {
 	private boolean interactPressed = false;
 	private boolean walking = true;
 	private int intomap = 1;
-	private int intofight = 1;
+	private int intofight = 0;
+	private boolean Fight = false;
 	private boolean GameOrFight=true;
 	private Image[] WRIGHT = new Image[2];
 	private Image[] WLEFT = new Image[2];
+	private Image[] WRIGHTF = new Image[2];
+	private Image[] WLEFTF = new Image[2];
 	private int Velocity = 10;
 	public boolean JUMP = false;
 	public boolean on_ground = true;
@@ -48,13 +50,32 @@ public class Dude {
 		loadPlayerIms();
 
 	}
+	public boolean getFight() {
+        return this.Fight;
+    }
+	public void setFight(boolean Fight) {
+		if(this.getIntoMap()==1)
+		{
+			intofight=1;
+		}
+
+		this.Fight = Fight;
+	}
+
+	public int getSavedX() {
+		return savedX;
+	}
 
 	private void loadPlayerIms() {
-
 		ImageIcon ii1 = new ImageIcon("src/player1.png");
 		ImageIcon ii2 = new ImageIcon("src/Player2.png");
 		ImageIcon ii3 = new ImageIcon("src/player1L.png");
 		ImageIcon ii4 = new ImageIcon("src/Player2L.png");
+		this.WRIGHT[0] = ii1.getImage();
+		this.WRIGHT[1] = ii2.getImage();
+		this.WLEFT[0] = ii3.getImage();
+		this.WLEFT[1] = ii4.getImage();
+
 		ImageIcon climb1 = new ImageIcon("src/playerClimb1.png");
 		ImageIcon climb2 = new ImageIcon("src/playerClimb2.png");
 		ImageIcon climb3 = new ImageIcon("src/playerClimb3.png");
@@ -68,10 +89,8 @@ public class Dude {
 		this.Climb[1] = climb2.getImage();
 		this.Climb[2] = climb3.getImage();
 		this.Climb[3] = climb4.getImage();
-		this.WRIGHT[0] = ii1.getImage();
-		this.WRIGHT[1] = ii2.getImage();
-		this.WLEFT[0] = ii3.getImage();
-		this.WLEFT[1] = ii4.getImage();
+
+
 		this.Swalk[0] = Swalk1.getImage();
 		this.Swalk[1] = Swalk2.getImage();
 		this.SwalkL[0] = Swalk3.getImage();
@@ -176,46 +195,99 @@ public class Dude {
 	}
 
 	public Image getImage(int p) {
+//		if (Attacking){
+//
+//			return WRIGHTF[p];
+//		}
+		if (!GameOrFight){
+			if (Attacking){
 
-		if (climbing) {
-			if (dy == 0) {
-				return Climb[dx];
+				if (dx == 0 && dy == 0) {
+					if (lastdir == -1) {
+						return WLEFT[p];
+					}
+					if (lastdir == 1) {
+						return WRIGHT[p];
+					}
+				}
+				if (dx >= 1) {
+					stopwalk = true;
+					lastdir = dx;
+					return WRIGHT[p];
+
+				} else if (dx <= -1) {
+					stopwalk = true;
+					lastdir = dx;
+					return WLEFT[p];
+
+				}
+
+			}else if (walking){
+				if (dx == 0 && dy == 0) {
+					if (lastdir == -1) {
+						return  WLEFT[dx] ;
+					}
+					if (lastdir == 1) {
+						return  WRIGHT[dx];
+					}
+				}
+				if (dx >= 1) {
+					stopwalk = true;
+					lastdir = dx;
+					return  WRIGHT[p];
+
+				} else if (dx <= -1) {
+					stopwalk = true;
+					lastdir = dx;
+					return   WLEFT[p];
+
+				}
 			}
-			return Climb[p];
 		}
-		if (walking) {
-			if (dx == 0 && dy == 0) {
-				if (lastdir == -1) {
-					return (dark == false) ? WLEFT[dx] : SwalkL[dx];
-				}
-				if (lastdir == 1) {
-					return (dark == false) ? WRIGHT[dx] : Swalk[dx];
-				}
-			}
-			if (dx >= 1) {
-				stopwalk = true;
-				lastdir = dx;
-				return (dark == false) ? WRIGHT[p] : Swalk[p];
 
-			} else if (dx <= -1) {
-				stopwalk = true;
-				lastdir = dx;
-				return (dark == false) ? WLEFT[p] : SwalkL[p];
+		else if (GameOrFight){
+            if (climbing) {
+                if (dy == 0) {
+                    return Climb[dx];
+                }
+                return Climb[p];
+            }
 
-			}
+            else if (walking) {
+                if (dx == 0 && dy == 0) {
+                    if (lastdir == -1) {
+                        return (!dark) ? WLEFT[dx] : SwalkL[dx];
+                    }
+                    if (lastdir == 1) {
+                        return (!dark) ? WRIGHT[dx] : Swalk[dx];
+                    }
+                }
+                if (dx >= 1) {
+                    stopwalk = true;
+                    lastdir = dx;
+                    return (!dark) ? WRIGHT[p] : Swalk[p];
 
-			if (dy >= 1 || dy <= -1) {
+                } else if (dx <= -1) {
+                    stopwalk = true;
+                    lastdir = dx;
+                    return (dark == false) ? WLEFT[p] : SwalkL[p];
 
-				if (stopwalk == true) {
+                }
 
-					return (!dark) ? WRIGHT[p] : Swalk[p];
-				} else {
-					return (!dark) ? WLEFT[p] : SwalkL[p];
-				}
+                if (dy >= 1 || dy <= -1) {
 
-			}
+                    if (stopwalk == true) {
 
+                        return (!dark) ? WRIGHT[p] : Swalk[p];
+                    } else {
+                        return (!dark) ? WLEFT[p] : SwalkL[p];
+                    }
+
+                }
+
+            }
 		}
+
 		return (stopwalk == true) ? WRIGHT[dx] : WLEFT[dx];
 	}
 
@@ -257,12 +329,12 @@ public class Dude {
 			if ((ch & 1) == 1 && (ch != 0) && (Nch != 0)) {
 				this.x = this.x + (dx * blocksize);
 				this.y = this.y + (dy * blocksize);
-				intofight++;
 				walking=true;
 				interact = false;
 				interactPressed=false;
 				pushTalk=false;
 				GameOrFight=false;
+				Fight=true;
 
 			}
 			if ((ch & 4) == 4 && (ch != 0) && Nch != 0) {
@@ -282,10 +354,6 @@ public class Dude {
 				}
 
 			}
-
-
-
-
 			if ((ch & 5) == 5 && (ch != 0) && (Nch != 0)) {
 				interact = false;
 				pushTalk=false;
@@ -429,8 +497,14 @@ public class Dude {
 
 			}
 			else{
+
 				System.out.println(this.x+" , "+this.y);
-				this.x = this.x + dx * 12;
+				if(x>=36 && x<W){
+					this.x = this.x + dx * 12;
+				}if(x<36){
+					x=36;
+				}
+
 				if (this.y + this.h < 540) {
 					this.Velocity += 1;
 
@@ -461,13 +535,18 @@ public class Dude {
 
 		if (key == KeyEvent.VK_Q) {
 
-			dx = -1;
+				dx = -1;
+				savedX=dx;
+
+
 
 		}
 
 		if (key == KeyEvent.VK_D) {
 
+
 			dx = 1;
+			savedX=dx;
 		}
 
 		if (key == KeyEvent.VK_Z) {
@@ -517,5 +596,52 @@ public class Dude {
 			dy = 0;
 			stopwalk = true;
 		}
+	}
+
+	public void setWalkingSprites(){
+		ImageIcon ii1 = new ImageIcon("src/player1.png");
+		ImageIcon ii2 = new ImageIcon("src/Player2.png");
+		ImageIcon ii3 = new ImageIcon("src/player1L.png");
+		ImageIcon ii4 = new ImageIcon("src/Player2L.png");
+		ImageIcon ii1F = new ImageIcon("src/PlayerFight1.png");
+		ImageIcon ii2F = new ImageIcon("src/PlayerFight2.png");
+		ImageIcon ii3F = new ImageIcon("src/PlayerFight1L.png");
+		ImageIcon ii4F = new ImageIcon("src/PlayerFight2L.png");
+		ImageIcon F1 = new ImageIcon("src/PlayerFightSlash1.png");
+		ImageIcon F2 = new ImageIcon("src/PlayerFightSlash2.png");
+		ImageIcon F3 = new ImageIcon("src/PlayerFightSlash1L.png");
+		ImageIcon F4 = new ImageIcon("src/PlayerFightSlash2L.png");
+
+		if (GameOrFight){
+			this.WRIGHT[0] = ii1.getImage();
+			this.WRIGHT[1] = ii2.getImage();
+			this.WLEFT[0] = ii3.getImage();
+			this.WLEFT[1] = ii4.getImage();
+		}else{
+
+			if(Attacking){
+				this.WRIGHT[0]=F1.getImage();
+				this.WRIGHT[0]=F2.getImage();
+				this.WLEFT[0]=F3.getImage();
+				this.WLEFT[0]=F4.getImage();
+			}else if (walking){
+				this.WRIGHT[0]=ii1F.getImage();
+				this.WRIGHT[1]=ii2F.getImage();
+				this.WLEFT[0]=ii3F.getImage();
+				this.WLEFT[1]=ii4F.getImage();
+			}
+
+
+		}
+    }
+
+
+
+	public boolean isAttacking() {
+		return Attacking;
+	}
+
+	public void setAttack(boolean b) {
+		Attacking = b;
 	}
 }

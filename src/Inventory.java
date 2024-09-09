@@ -64,5 +64,6 @@ public class Inventory extends JPanel{
 	public int getItemscolumns() {
 		return items.getcolumns();
 	}
-	
+
+
 }

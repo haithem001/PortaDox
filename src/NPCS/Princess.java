@@ -13,7 +13,7 @@ public class Princess {
 	
 	private Image IDOL ;
 
-	private String[] Dialog = {}; 
+	private String[] Dialog = {"Help us ","Take this key and go to our king"};
 	public Princess() {
 		
 		loadNPC();

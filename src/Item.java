@@ -15,7 +15,7 @@ public class Item extends JComponent{
 	private int shield=0;
 	private boolean functional=false;
 	private boolean exist ;
-	private Image image ;
+	private Image image ,imageR;
 	
 
 	
@@ -30,7 +30,10 @@ public class Item extends JComponent{
 		this.y=y;
 		this.setVisible(true);
 			ImageIcon item =new ImageIcon("src/"+Integer.toString(Id)+".png");
+			ImageIcon itemR =new ImageIcon("src/"+Integer.toString(Id)+"R.png");
 			image=item.getImage();
+			imageR=itemR.getImage();
+
 			w=image.getWidth(null); 
 			h=image.getHeight(null);
 		
@@ -57,12 +60,19 @@ public class Item extends JComponent{
 	public int getH() {
 		return this.h;
 	}
-	public Image getImage() {
+	public Image getImage(int dx) {
+		if(dx>=0){
 			return image;
-			
+
+		}
+		else{
+			return imageR;
+		}
+
 	
 		
 	}
+
 		
 
 	public void setExist(boolean b){
@@ -72,5 +82,9 @@ public class Item extends JComponent{
 	
 	public boolean isExisted() {
 		return this.exist;
+	}
+
+	public int getId() {
+		return this.Id;
 	}
 }

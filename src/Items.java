@@ -1,10 +1,6 @@
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.List;
 
 import javax.swing.JComponent;
-import javax.swing.JPanel;
 
 public class Items extends JComponent{
 		private int x=125;
@@ -13,84 +9,116 @@ public class Items extends JComponent{
 		private int gapY=80;
 		private int w;
 		private int h;
-		private int rows=4;
-		private int columns=7;
+		public int rows=5;
+		public int columns=7;
 		private Item[][] list_items ={
-				
-				
+
+
 				{
-					new Item(60,20,0,0,false,true,205,y),
-					new Item(40,0,20,0,false,true,205+gapX,y),
-					new Item(0,0,0,0,false,false,205+2*gapX,y),
-					new Item(0,0,0,0,false,false,205+3*gapX,y),
-					new Item(0,0,0,0,false,false,205+4*gapX,y),
-					new Item(0,0,0,0,false,false,205+5*gapX,y),
-					new Item(1,10,0,0,false,true,205+6*gapX,y),
+					new Item(1,10,0,0,false,false ,x		      ,y),
+					new Item(60,20,0,0,false,false,205       ,y),
+					new Item(40,0,20,0,false,false,205+gapX  ,y),
+					new Item(0,0,0,0,false,false ,205+2*gapX,y),
+					new Item(0,0,0,0,false,false ,205+3*gapX,y),
+					new Item(0,0,0,0,false,false ,205+4*gapX,y),
+					new Item(0,0,0,0,false,false ,205+5*gapX,y),
 				}
 
 				,{
 
-				new Item(60,20,0,0,false,true,205,y),
-				new Item(40,0,20,0,false,true,205+gapX  ,y+gapX  ),
-				new Item(0,0,0,0,false,false,205 +2*gapX,y+2*gapX),
-				new Item(0,0,0,0,false,false,205 +3*gapX,y+3*gapX),
-				new Item(0,0,0,0,false,false,205 +4*gapX,y+4*gapX),
-				new Item(0,0,0,0,false,false,205 +5*gapX,y+5*gapX)
+				new Item(0,0,0,0,false,false,x     ,y+gapX),
+				new Item(0,0,0,0,false,false,205       ,y+gapX ),
+				new Item(0,0,0,0,false,false,205+gapX  ,y+gapX),
+				new Item(0,0,0,0,false,false,205+2*gapX,y+gapX),
+				new Item(0,0,0,0,false,false,205+3*gapX,y+gapX),
+				new Item(0,0,0,0,false,false,205+4*gapX,y+gapX),
+				new Item(0,0,0,0,false,false ,205+5*gapX,y+gapX),
 
 				}
 				,{
-					new Item(0,0,0,0,false,false,x,y),
-					new Item(0,0,0,0,false,false,40,y),
-					new Item(0,0,0,0,false,false,x+80,y),
-					new Item(0,0,0,0,false,false,x+120,y),
-					new Item(0,0,0,0,false,false,x+160,y),
-					new Item(0,0,0,0,false,false,x+200,y),
-					new Item(0,0,0,0,false,false,x+240,y)
+					new Item(0,0,0,0,false,false,x            ,y+2*gapX),
+					new Item(0,0,0,0,false,false,205       ,y+2*gapX),
+					new Item(0,0,0,0,false,false,205+gapX  ,y+2*gapX),
+					new Item(0,0,0,0,false,false,205+2*gapX,y+2*gapX),
+					new Item(0,0,0,0,false,false,205+3*gapX,y+2*gapX),
+					new Item(0,0,0,0,false,false,205+4*gapX,y+2*gapX),
+					new Item(0,0,0,0,false,false,205+5*gapX,y+2*gapX)
 				}
 				,{
-					new Item(0,0,0,0,false,false,x,y),
-					new Item(0,0,0,0,false,false,40,y),
-					new Item(0,0,0,0,false,false,x+80,y),
-					new Item(0,0,0,0,false,false,x+120,y),
-					new Item(0,0,0,0,false,false,x+160,y),
-					new Item(0,0,0,0,false,false,x+200,y),
-					new Item(0,0,0,0,false,false,x+240,y)
+					new Item(0,0,0,0,false,false,x		    	,y+3*gapX),
+					new Item(0,0,0,0,false,false,205       ,y+3*gapX),
+					new Item(0,0,0,0,false,false,205+gapX  ,y+3*gapX),
+					new Item(0,0,0,0,false,false,205+2*gapX,y+3*gapX),
+					new Item(0,0,0,0,false,false,205+3*gapX,y+3*gapX),
+					new Item(0,0,0,0,false,false,205+4*gapX,y+3*gapX),
+					new Item(0,0,0,0,false,false,205+5*gapX,y+3*gapX)
+				},
+				{
+						new Item(0,0,0,0,false,false,x		     ,y+4*gapX),
+						new Item(0,0,0,0,false,false,205       ,y+4*gapX),
+						new Item(0,0,0,0,false,false,205+gapX  ,y+4*gapX),
+						new Item(0,0,0,0,false,false ,205+2*gapX,y+4*gapX),
+						new Item(0,0,0,0,false,false ,205+3*gapX,y+4*gapX),
+						new Item(0,0,0,0,false,false ,205+4*gapX,y+4*gapX),
+						new Item(0,0,0,0,false,false ,205+5*gapX,y+4*gapX),
 				}
-				  
-				 
-				
+
+
+
 		};
 
-	public  Item findClosestItem( int targetX, int targetY) {
-		Item closestItem = null;
-		double minDistance = Double.MAX_VALUE;
+	Items(){
 
 
-		for (Item[] row : list_items) {
-			for (Item item : row) {
-				int itemWidth = item.getW();
-				int itemLength = item.getH();
-				int centerX = item.getX() + itemWidth / 2;
-				int centerY = item.getY() + itemLength / 2;
-				double distance = Math.sqrt(Math.pow(targetX - centerX, 2) + Math.pow(targetY - centerY, 2));
-				if (distance < minDistance) {
-					minDistance = distance;
-					closestItem = item;
-				}
+
+
+	}
+	public int getId(int i,int j){
+
+		return list_items[i][j].getId();
+	}
+	public int[] findClosestItem( int targetX, int targetY) {
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < columns; j++) {
+				Item currentItem = list_items[i][j];
+				int itemX = currentItem.getX();
+				int itemY = currentItem.getY();
+				int itemWidth = 76;
+				int itemHeight = 76;
+
+				if (targetX > itemX && targetX < itemX + itemWidth
+						&&targetY > itemY && targetY < itemY + itemHeight) {
+
+					return new int[]{itemX, itemY,i,j};
+					}
+
 			}
-		}
-		if (minDistance < 50) {
-			return closestItem;
-
 		}
 		return null;
 	}
+	public void showItems() {
+		for(int i=0;i<rows;i++){
+			for(int j=0;j<columns;j++){
+				if(list_items[i][j].getId()!=0) {
+					System.out.print("X");
 
-		Items(){
-			
-		
-			
-			
+				}
+				else {
+					System.out.print("O");
+				}
+			}
+			System.out.println(" ");
+		}
+	}
+
+		public int GetCenterItemX(int i,int j) {
+			Item item =list_items[i][j];
+            return item.getX() + item.getW() / 2;
+		}
+		public int GetCenterItemY(int i,int j){
+			Item item =list_items[i][j]
+					;
+            return item.getY() + item.getH() / 2;
 		}
 		public void setX(int x) {
 			this.x=x;
@@ -102,13 +130,16 @@ public class Items extends JComponent{
 			return this.x;
 		}
 		public Image getItemImage(int i,int j) {
-			return list_items[i][j].getImage();
+			return list_items[i][j].getImage(1);
 		}
 		public Item[][] getItemsList() {
 			return list_items;
 		}
-		public JComponent getItem(int i,int j) {
+		public Item getItem(int i,int j) {
 			return list_items[i][j];
+		}
+		public void setItem(Item x,int i,int j) {
+			list_items[i][j]=x;
 		}
 		public int getItemX(int i,int j) {
 			return list_items[i][j].getX();
@@ -120,7 +151,40 @@ public class Items extends JComponent{
 			list_items[i][j].setX(a);
 			list_items[i][j].setY(b);
 		}
-		
+		public int getItemI(Item item) {
+			for (int i =0;i<rows;i++) {
+				for (int j=0;j<columns;j++) {
+					if (list_items[i][j].equals(item)) {
+						return i;
+					}
+				}
+			}
+			return -1;
+
+		}
+		public void change_item(int i,int j,int k,int l) {
+
+			Item item=list_items[i][j];
+			list_items[i][j]=list_items[k][l];
+			list_items[k][l]=item;
+
+
+
+
+		}
+		public int getItemJ(Item item) {
+			for (int i =0;i<rows;i++) {
+				for (int j=0;j<columns;j++) {
+					if (list_items[i][j].equals(item)) {
+						return j;
+					}
+				}
+			}
+			return -1;
+
+		}
+
+
 		public int getY() {
 			return this.y;
 		}

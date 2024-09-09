@@ -16,7 +16,7 @@ public class Board {
 	private int x=0;
 	private int y=0;
 	private Image[] image=new Image[2];
-	private Image[] Fimage=new Image[5];
+	private Image[] Fimage=new Image[2];
 
 
 	private Maps M= new Maps();
@@ -426,7 +426,6 @@ public class Board {
 	}
 	private short[] importMap(int s) {
 		short[] arr = new short[0];
-		// load content of file based on specific delimiter
 		Scanner sc = null;
 		try {
 			sc = new Scanner(new FileReader("src/Map" + this.Selector + ".csv"))
@@ -435,8 +434,6 @@ public class Board {
 			throw new RuntimeException(e);
 		}
 		String str;
-
-		// checking end of file
 		while (sc.hasNext()) {
 			str = sc.next();
 			char[] string =str.toString().toCharArray();
@@ -471,18 +468,14 @@ public class Board {
 			h = image[0].getHeight(null);
 	}
 	public void setFightSelector(int s) {
-			this.Selector=s;
+			this.FSelector=s;
 			ImageIcon map1=new ImageIcon("src/Alien Fight Map/"+Integer.toString(this.FSelector)+"_0.png");
 			ImageIcon map2=new ImageIcon("src/Alien Fight Map/"+Integer.toString(this.FSelector)+"_1.png");
-			ImageIcon map3=new ImageIcon("src/Alien Fight Map/"+Integer.toString(this.FSelector)+"_2.png");
-			ImageIcon map4=new ImageIcon("src/Alien Fight Map/"+Integer.toString(this.FSelector)+"_3.png");
-			ImageIcon map5=new ImageIcon("src/Alien Fight Map/"+Integer.toString(this.FSelector)+"_4.png");
+
 
 			Fimage[0]=map1.getImage();
 			Fimage[1]=map2.getImage();
-			Fimage[2]=map3.getImage();
-			Fimage[3]=map4.getImage();
-			Fimage[4]=map5.getImage();
+
 
 			w = image[0].getWidth(null);
 			h = image[0].getHeight(null);

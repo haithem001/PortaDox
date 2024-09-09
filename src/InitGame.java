@@ -1,13 +1,4 @@
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.ComponentOrientation;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.Image;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
@@ -35,10 +26,17 @@ public class InitGame extends JFrame implements ActionListener{
 	JPanel pbutton=new JPanel();
 	JPanel ilabel=new JPanel();
 	JPanel plabel=new JPanel();
+	Font pixelfont;
 	
 	InitGame() throws IOException{	
      //LOGO
+		try{
+			pixelfont = Font.createFont(Font.TRUETYPE_FONT, new File("src/PixellettersFull.ttf"));
 
+
+		}catch (IOException | FontFormatException e) {
+			throw new RuntimeException(e);
+		}
        BufferedImage i = ImageIO.read(new File("src/LOGO.png"));
        image=new JLabel(new ImageIcon(i));
        image.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
@@ -79,7 +77,7 @@ public class InitGame extends JFrame implements ActionListener{
       	label.setHorizontalAlignment(JLabel.CENTER);
       	label.setVerticalAlignment(JLabel.CENTER);
       	label.setForeground(Color.white);
-      	label.setFont(new Font("PixellettersFull", Font.BOLD, 180));
+      	label.setFont(pixelfont.deriveFont(Font.BOLD, 180));
         label.setBorder(null);
       	label.setVisible(true); 
       
@@ -91,7 +89,7 @@ public class InitGame extends JFrame implements ActionListener{
 		play.setText("PLAY");
 		play.setFocusable(false);
         play.addActionListener(this);
-        play.setFont(new Font("PixellettersFull", Font.BOLD, 50));
+        play.setFont(pixelfont.deriveFont(Font.BOLD, 180));
         play.setBorder(null);
         play.setBackground(Color.black);
         play.setFocusPainted(false);

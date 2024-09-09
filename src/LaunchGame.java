@@ -37,10 +37,11 @@ LaunchGame(){
 	panel.setBounds(0, 0, 4000, 1500);
 	panel.setOpaque(true);
 	game.setBackground(Color.BLACK);
-	game.setBounds(100, 0, 1500, 1000);
+	game.setBounds(0, 0, 1500, 1000);
 	game.setOpaque(true);
-	lpane.add(panel, new Integer(0), 0);
-	lpane.add(game, new Integer(1), 0);
+
+	lpane.add(panel, JLayeredPane.DEFAULT_LAYER, 0);
+	lpane.add(game,  JLayeredPane.PALETTE_LAYER, 0);
 	this.pack();
 	this.setVisible(true);
 
