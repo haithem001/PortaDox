@@ -6,9 +6,10 @@ import java.awt.event.KeyEvent;
 import javax.swing.ImageIcon;
 
 public class Dude {
+
 	private boolean Attacking=false;
 	private int dx=0,savedX;
-	private int dy,savedY;
+	private int dy,MemoryX,MemoryY;
 	public int x;
 	public int y;
 	private boolean pushTalk =false;
@@ -18,7 +19,7 @@ public class Dude {
 	private boolean stopclimb = true;
 	private int w;
 	private int h;
-	private int health = 3;
+	private int health = 5;
 	private boolean interact = false;
 	private boolean climbing = false;
 	private boolean interactPressed = false;
@@ -34,9 +35,10 @@ public class Dude {
 	private int Velocity = 10;
 	public boolean JUMP = false;
 	public boolean on_ground = true;
-	private int jump_height = 15;
+	private int jump_height = 18;
+	public int DamageEffect=0;
 
-
+	private boolean bounce=false;
 	private boolean Quit=false;
 	private Image[] Climb = new Image[4];
 	private Image[] Swalk = new Image[2];
@@ -44,6 +46,7 @@ public class Dude {
 	private boolean dark = false;
 	public Rectangle solidarea;
 	private boolean allowWalk = false;
+	private boolean damage=false;
 
 	public Dude() {
 
@@ -200,6 +203,14 @@ public class Dude {
 //			return WRIGHTF[p];
 //		}
 		if (!GameOrFight){
+			if (damage){
+				if (savedX < 0){
+					return WLEFT[p];
+				}
+				else if (savedX >= 0){
+					return WRIGHT[p];
+				}
+			}else
 			if (Attacking){
 
 				if (dx == 0 && dy == 0) {
@@ -490,6 +501,51 @@ public class Dude {
 			}
 		}
 	}
+	public void checkHit(Mob[] Mobs) {
+		for(int i =0;i<Mobs.length;i++){
+			if(Mobs[i]!=null){
+				if (Mobs[i].getType()==0) {
+					if(Mobs[i].bullets!=null ){
+						if (!Mobs[i].bullets.isEmpty()){
+							for (Bullet b :Mobs[i].bullets){
+								if (b.getX()<this.x+this.w &&( b.getY()+b.getH()>this.y && b.getY()<this.y+this.h) && b.getX()+b.getW()>this.x){
+									if (b.visible){
+										Damaged();
+										b.visible=false;
+
+									}
+									break;
+
+								}
+							}
+						}
+
+					}
+				}
+				else if (Mobs[i].getType()==1){
+					if (Mobs[i].getX()+ Mobs[i].getW()/2 - 5 < this.x+this.w && Mobs[i].getX()+ Mobs[i].getW()/2 + 5 > this.x && Mobs[i].getMobAnimPos()==4){
+						Mobs[i].setMobAnimPos(0);
+						Damaged();
+					}
+				}
+
+			}
+		}
+
+
+	}
+	public void Bounce(){
+		this.bounce=true;
+	}
+	public void Damaged(){
+		this.damage=true;
+
+
+		this.health--;
+	}
+	public int savedDx(){
+		return this.dx;
+	}
 	public void move(short[] ScreenData, int nblocks_x, int nblocks_y, int blocksize,int H,int W) {
 
 			if (GameOrFight){
@@ -525,6 +581,8 @@ public class Dude {
 
 				}
 			}
+			this.MemoryX=x;
+			this.MemoryY=y;
 	}
 	public void setPushTalk(boolean x){
 		this.pushTalk=x;
@@ -597,7 +655,9 @@ public class Dude {
 			stopwalk = true;
 		}
 	}
-
+	public boolean isDamaged(){
+		return this.damage;
+	}
 	public void setWalkingSprites(){
 		ImageIcon ii1 = new ImageIcon("src/player1.png");
 		ImageIcon ii2 = new ImageIcon("src/Player2.png");
@@ -611,6 +671,8 @@ public class Dude {
 		ImageIcon F2 = new ImageIcon("src/PlayerFightSlash2.png");
 		ImageIcon F3 = new ImageIcon("src/PlayerFightSlash1L.png");
 		ImageIcon F4 = new ImageIcon("src/PlayerFightSlash2L.png");
+		ImageIcon Hit=new ImageIcon("src/PHIT.png");
+		ImageIcon HitL=new ImageIcon("src/PHITL.png");
 
 		if (GameOrFight){
 			this.WRIGHT[0] = ii1.getImage();
@@ -618,13 +680,19 @@ public class Dude {
 			this.WLEFT[0] = ii3.getImage();
 			this.WLEFT[1] = ii4.getImage();
 		}else{
-
-			if(Attacking){
+			if (damage) {
+				this.WRIGHT[0] = ii1F.getImage();
+				this.WRIGHT[1] =Hit.getImage();
+				this.WLEFT[0] = ii3F.getImage();
+				this.WLEFT[1] = HitL.getImage();
+			}
+			else if(Attacking){
 				this.WRIGHT[0]=F1.getImage();
-				this.WRIGHT[0]=F2.getImage();
+				this.WRIGHT[1]=F2.getImage();
 				this.WLEFT[0]=F3.getImage();
-				this.WLEFT[0]=F4.getImage();
-			}else if (walking){
+				this.WLEFT[1]=F4.getImage();
+
+			}else if (walking ){
 				this.WRIGHT[0]=ii1F.getImage();
 				this.WRIGHT[1]=ii2F.getImage();
 				this.WLEFT[0]=ii3F.getImage();
@@ -643,5 +711,16 @@ public class Dude {
 
 	public void setAttack(boolean b) {
 		Attacking = b;
+	}
+
+	public void setDamaged(boolean b) {
+		this.damage = b;
+	}
+
+	public int getMemoryY() {
+		return MemoryY;
+	}
+	public int getMemoryX(){
+		return MemoryX;
 	}
 }

@@ -40,10 +40,15 @@ public class Bullet {
 
         length = Math.sqrt(XLEN * XLEN + YLEN * YLEN);
 
-        Vx= (XLEN  / length) ;
-        Vy= (YLEN / length) ;
+        if(XLEN>0){
+        Vx=30;
+        }else {
+            Vx=-30;
+        }
 
-        ImageIcon newBullet = new ImageIcon("src/BULLET.png");
+        angle = Math.atan2(targetX- startX, targetY - startY) + Math.PI/2;
+
+        ImageIcon newBullet = new ImageIcon("src/Alien Fight Map/Bullet.png");
         img = newBullet.getImage();
         visible = true;
     }
@@ -71,14 +76,16 @@ public class Bullet {
 
 
 
-    public void move(int width, int height)
+    public void move(int W)
     {
-        x -= (int) (Vx*40 );
+        x += Vx;
 
-        if (x>width ||x<0){
+
+        if (x<0 || x>W){
             visible = false;
 
         }
+
 
 
 

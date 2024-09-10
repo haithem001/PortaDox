@@ -4,19 +4,23 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class Mob {
+    private boolean bounce=false;
     public int x;
     public int y;
     public int w;
     public int h;
     private int startX,startY;
     private boolean alive = true;
-    private int dir=-5;
+    private int dir=-7;
+    private int speed=dir;
     private int dy=5;
-
+    private int health=2;
+    private int stop =0;
     public Rectangle BODY;
-    public List<Bullet> bullets=new ArrayList<>();
+    public List<Bullet> bullets;
     private  Image[] img =new Image[2];
     private  Image imgExplode;
     private int mobAnimCount =2;
@@ -26,24 +30,58 @@ public class Mob {
     private int AnimCount=2;
     private int Velocity=0;
     private boolean on_ground=false;
+    private int jump_height=10;
+    private int savedY=0;
+    private  ImageIcon A1,A2,B1,B2,B3,B4,B5,Hit,HitL,A1L;
+    private int type=-1;
+    private int direction=0;
+    private int bouncedir=0;
 
-
-    public  Mob (int x, int y,int level) {
-
+    public  Mob (int x, int y,int level,int stop,int type) {
+        this.stop=stop;
         this.x = x;
+        this.type=type;
         this.y = y;
         this.startX=x;
         ImageIcon image=new ImageIcon("/src/Explosion.png");
 
         this.alive=true;
         if (level==1){
-            ImageIcon A1 = new ImageIcon("src/Alien Fight Map/A1.png");
-            ImageIcon A2 = new ImageIcon("src/Alien Fight Map/A2.png");
-            this.img = new Image[]{A1.getImage(),A2.getImage()};
-            w=img[0].getWidth(null);
-            h=img[0].getHeight(null);
-        }
+            if (type==0){
+                A1 = new ImageIcon("src/Alien Fight Map/A1.png");
+                A2 = new ImageIcon("src/Alien Fight Map/A2.png");
+                Hit = new ImageIcon("src/Alien Fight Map/AHIT.png");
+                HitL=new ImageIcon("src/Alien Fight Map/AHITL.png");
+                A1L = new ImageIcon("src/Alien Fight Map/A1L.png");
+                this.img = new Image[]{A1.getImage(),A2.getImage()};
+                w=img[0].getWidth(null);
+                h=img[0].getHeight(null);
+                this.savedY=y+this.h;
+                bullets=new ArrayList<>();
+                this.AnimCount=2;
+            }if (type==1){
+                B1= new ImageIcon("src/Alien Fight Map/B1.png");
+                B2= new ImageIcon("src/Alien Fight Map/B2.png");
+                B3= new ImageIcon("src/Alien Fight Map/B3.png");
+                B4= new ImageIcon("src/Alien Fight Map/B4.png");
+                B5= new ImageIcon("src/Alien Fight Map/B5.png");
+                this.y-=200;
+                this.img = new Image[]{B1.getImage(),B2.getImage(),B3.getImage(),B4.getImage(),B5.getImage()};
+                w=img[0].getWidth(null);
+                h=img[0].getHeight(null);
+                this.savedY=y+this.h;
+                this.AnimCount=5;
+                MOB_ANIM_DELAY =13;
+                dir=-12;
 
+
+            }
+
+
+
+
+
+        }
 
 
 
@@ -97,29 +135,83 @@ public class Mob {
         this.BODY.y=y;
     }
     public void move(int Plateform){
-        if(!on_ground){
-            if (this.y  < Plateform-this.w) {
-                this.Velocity += 1;
+        if (type==0){
+            if (bounce && on_ground){
+                this.on_ground = false;
+                this.Velocity = -this.jump_height;
+                this.y += Velocity;
 
-                y += this.Velocity;
 
-            } else {
+            }
+            if(!on_ground){
+                if (this.y+this.h  < savedY) {
+                    this.Velocity += 1;
+                    if(bouncedir>0){
+                        this.x-=dir;
 
-                on_ground = true;
+                    }
+                    else {
+                        this.x+=dir;
+                    }
+                    y += this.Velocity;
+                    bounce=false;
+                    if(direction<0){
+                        this.img = new Image[]{A1.getImage(),Hit.getImage()};
+
+                    }else{
+                        this.img = new Image[]{A1L.getImage(),HitL.getImage()};
+                    }
+
+
+                } else {
+
+                    on_ground = true;
+                    this.img = new Image[]{A1.getImage(),A2.getImage()};
+
+                }
+            }
+            else{
+
+                if (x>stop){
+                    this.x+=dir;
+                    this.img = new Image[]{A1.getImage(),A2.getImage()};
+
+                }
+                else{
+                    if(this.direction<0){
+                        this.img = new Image[]{A1.getImage(),A1.getImage()};
+
+                    }else{
+                        this.img = new Image[]{A1L.getImage(),A1L.getImage()};
+                    }
+
+                }
+
             }
         }
         else{
             this.x+=dir;
-
         }
+
 
 
 
 
 
     }
+    public int getType(){
+        return this.type;
+    }
     public void shoot(int x, int y, int playerX,int playerY){
-        bullets.add(new Bullet(x,y,playerX,playerY));
+        if (bullets.isEmpty()){
+            bullets.add(new Bullet(x,y,playerX,playerY));
+        }
+
+
+    }
+
+    public int getMobAnimPos(){
+        return this.mobAnimPos;
     }
     public void setW(int w) {
         this.w = w;
@@ -127,26 +219,95 @@ public class Mob {
     public void setH(int h) {
         this.h = h;
     }
-
+    
 
     public boolean isAlive() {
         return alive;
+    }
+
+    public void Bounce(int bouncedir){
+          this.bounce=true;
+          this.bouncedir=bouncedir;
+
     }
 
     public void setAlive(boolean alive) {
         this.alive = alive;
     }
     public void  DrawMob(Graphics2D g2){
-        switch (mobAnimPos){
-            case 0:
-                g2.drawImage(this.getImage(0),this.x,this.y,null);
-                break;
-            case 1:
-                g2.drawImage(this.getImage(1),this.x,this.y,null);
-                break;
+        if (type==0){
+            switch (mobAnimPos){
+                case 0:
+                    g2.drawImage(this.getImage(0),this.x,this.y,null);
+                    break;
+                case 1:
+                    g2.drawImage(this.getImage(1),this.x,this.y,null);
+                    break;
+            }
+        }else if (type==1){
+            switch (mobAnimPos){
+                case 0:
+                    g2.drawImage(this.getImage(0),this.x,this.y,null);
+                    break;
+                case 1:
+                    g2.drawImage(this.getImage(1),this.x,this.y,null);
+                    break;
+                case 2:
+                    g2.drawImage(this.getImage(2),this.x,this.y,null);
+                    break;
+                case 3:
+                    g2.drawImage(this.getImage(3),this.x,this.y,null);
+                    break;
+                case 4:
+                    g2.drawImage(this.getImage(4),this.x,this.y,null);
+                    break;
+            }
         }
+
 
 
     }
 
+    public void Damaged() {
+        this.health-=1;
+        stop=this.x;
+    }
+
+    public int getHealth() {
+        return health;
+    }
+
+    public boolean isOnGround() {
+        return on_ground;
+    }
+
+    public void drawBullets(Graphics2D g2) {
+        for (Bullet b:bullets){
+
+            if(b.visible){
+                  g2.drawImage(b.getImage(),b.getX(),b.getY(),null);
+
+            }
+        }
+    }
+
+    public void setMobAnimPos(int s) {
+        this.mobAnimPos=s;
+        this.mobAnimDir=1;
+    }
+    public void ChangeDir(int px){
+        if (px>this.x){
+            this.direction=-speed;
+        }
+        else{
+            this.direction=+speed;
+        }
+    }
+
+    public boolean isStopped() {
+        if (this.x<=stop){
+            return true;
+        }
+        return false;
+    }
 }

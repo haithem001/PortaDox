@@ -43,21 +43,73 @@ public class Wave {
 
 
     public void populate(int W){
+
         Random rand = new Random();
+        int New=rand.nextInt((int) (spawnInterval ));
         countTime();
-       if (currentTime>=   spawnInterval + rand.nextInt((int) (spawnInterval * 2))) {
+       if (currentTime>=   50+ New) {
            currentTime=0;
            count();
            if (npcCount > 1 ) {
-
-               Mobs[Mobs.length - npcCount] = new Mob(W+500, Plateform - 45, 1);
-
-
+               int r = rand.nextInt(2);
+               Mobs[Mobs.length - npcCount] = new Mob(rand.nextInt(300)+2*W, Plateform - 45, 1 ,W+rand.nextInt(100), r);
            }
 
        }
     }
+    public void Shoot(int x, int y, int playerX,int playerY,Mob m){
 
+        Random rand = new Random();
+
+                if (m!=null){
+                    if (m.getType()==0 && m.isStopped()){
+                        m.shoot(x,y+70,playerX,playerY);
+
+                    }
+
+                }
+
+
+
+
+    }
+
+
+    public int getLevel() {
+        return level;
+    }
+
+    public void BulletsUpdate(Mob m, int W){
+
+            if (m!=null && m.getType()==0){
+                if (!m.bullets.isEmpty()){
+                    for (Bullet B:m.bullets){
+                        if(B.visible){
+                            B.move(W);
+
+                        }else {
+                            B.move(W);
+                            if (B.x<0){
+                                m.bullets.remove(B);
+                                break;
+                            }
+                        }
+
+                    }
+                }
+            }
+        }
+
+
+    public void drawBullets(Graphics2D g2 ){
+
+        for (int i =0;i<Mobs.length;i++){
+            if(Mobs[i]!=null && Mobs[i].getType()==0){
+
+                Mobs[i].drawBullets(g2);
+            }
+        }
+    }
     public void countTime(){
         currentTime++;
     }
@@ -82,14 +134,34 @@ public class Wave {
 
 
     }
-    public void Move(){
+    public void Move(int px,int Width){
         for (int i =0;i<Mobs.length;i++){
             if(Mobs[i]!=null){
+                if(Mobs[i].getType()==0){
+                    Mobs[i].ChangeDir(px);
+                }
                 Mobs[i].move(Plateform);
+                BulletsUpdate(Mobs[i],Width);
+
+
 
             }
         }
     }
 
 
+    public void checkHit(int dx,int X,int W) {
+        for(int i =0;i<Mobs.length;i++){
+            if(Mobs[i]!=null){
+                if ((Mobs[i].getX()<X+W*2 && Mobs[i].getX()>X && dx>0) || (Mobs[i].getX()>X-W*2 && Mobs[i].getX()+Mobs[i].getW()<X && dx<0)) {
+
+                    Mobs[i].Bounce(dx);
+                    Mobs[i].Damaged();
+                }
+                if(Mobs[i].getHealth()<=0 && Mobs[i].isOnGround() ){
+                    Mobs[i]=null;
+                }
+            }
+        }
+    }
 }

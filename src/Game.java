@@ -7,6 +7,7 @@ import java.awt.geom.AffineTransform;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class Game extends JPanel implements ActionListener {
     public int[] XY;
@@ -14,6 +15,7 @@ public class Game extends JPanel implements ActionListener {
     public final int MAP_ANIM_DELAY = 30;
     public final int FMAP_ANIM_DELAY  = 20;
     public Effect e;
+
     public int actAnimCount;
     public final int MAP_ANIM_COUNT = 2;
     public final int FIGHTMAP_ANIM_COUNT = 2;
@@ -68,6 +70,8 @@ public class Game extends JPanel implements ActionListener {
     private int actAnimPos;
     private int actAnimDir=1;
     public Font pixelfont;
+    private int counterTitle=0;
+
     public Game() {
 
         initGame();
@@ -135,16 +139,27 @@ public class Game extends JPanel implements ActionListener {
     }
 
     private void doAnim(int AnimCount) {
+        
         dudeAnimCount--;
         if (dudeAnimCount <= 0) {
 
                 dudeAnimCount = DUDE_ANIM_DELAY;
 
             dudeAnimPos = dudeAnimPos + dudeAnimDir;
+
+            if(dude.isDamaged()){
+                dude.DamageEffect+=1;
+            }
+            if(dude.DamageEffect==3){
+                dude.setDamaged(false);
+                dude.setWalkingSprites();
+
+                dude.DamageEffect=0;
+            }
             if (dudeAnimPos == (AnimCount - 1) || dudeAnimPos == 0) {
 
                 dudeAnimDir = -dudeAnimDir;
-
+                
             }
         }
     }
@@ -202,10 +217,10 @@ public class Game extends JPanel implements ActionListener {
             }
         } else {
             mapAnimCount--;
-
             if (mapAnimCount <= 0) {
 
                 mapAnimCount = FMAP_ANIM_DELAY;
+                counterTitle++;
 
                 mapAnimPos = mapAnimPos + mapAnimDir;
 
@@ -311,17 +326,22 @@ public class Game extends JPanel implements ActionListener {
 
 
         } else {
+
             DrawBoard(g2);
             MapAnim();
             DrawPlayer(g2);
 
                 wave.drawMobs(g2);
-
+                wave.drawBullets(g2);
 
             if(dude.isWalking()){
                 doAnim(2);
 
-            }if(dude.isAttacking()){
+            }
+            if (dude.isDamaged()){
+                doAnim(2);
+            }
+            if(dude.isAttacking()){
                 ActAnim();
                 e.setX(dude.x+30);
                 e.setY(dude.y+8);
@@ -337,7 +357,7 @@ public class Game extends JPanel implements ActionListener {
 
 
             DrawHUD(g2);
-
+            DrawTitle(g2);
             repaint();
 
             /*if(board.getFightSelector() == 1) {DrawEnemies(g2); }*/
@@ -363,14 +383,21 @@ public class Game extends JPanel implements ActionListener {
 
 
     }
+    private void DrawTitle(Graphics2D g2d) {
+        if(counterTitle<10){
+            g2d.setFont(pixelfont.deriveFont(Font.BOLD,70));
+            g2d.setColor(new Color(255, 255, 255));
+            g2d.drawString("LEVEL"+wave.getLevel(), this.getWidth()/2-100, this.getHeight()/5);
+        }
 
+    };
     private void DrawHUD(Graphics2D g2d) {
 
         // HUD placement
         g2d.setFont(new Font("PixellettersFull", Font.BOLD, 30));
         g2d.setColor(new Color(132, 117, 119));
         for (int i = 1; i <= dude.gethealth(); i++) {
-            g2d.drawImage(hud.getHeartImage(), hud.getX() + i * 25, hud.getY() + 20, this);
+            g2d.drawImage(hud.getHeartImage(), hud.getX() + i * 25, hud.getY() -45, this);
 
         }
         g2d.drawImage(hud.getItemsImage(), hud.getX()+ 110, hud.getY(), this);
@@ -669,6 +696,21 @@ public class Game extends JPanel implements ActionListener {
                 default:
                     playerG.drawImage(dude.getImage(0), dude.getX(),dude.getY(), this);
             }
+        }else if (dude.isDamaged()) {
+            switch (mapAnimPos) {
+                case 0:
+                    playerG.drawImage(dude.getImage(0), dude.getX(), dude.getY(), this);
+
+                    break;
+                case 1:
+                    playerG.drawImage(dude.getImage(1), dude.getX(), dude.getY(), this);
+
+                    break;
+
+                default:
+                    playerG.drawImage(dude.getImage(0), dude.getX(),dude.getY(), this);
+            }
+
         }
 
     }
@@ -705,9 +747,11 @@ public class Game extends JPanel implements ActionListener {
         }
 
     }
+
+
     private void initFight(){
 
-        wave= new Wave(7,100,1,this.Plateform);
+        wave= new Wave(20,100,1,this.Plateform);
 
     }
     @Override
@@ -715,6 +759,7 @@ public class Game extends JPanel implements ActionListener {
         if (dude.isQuit()) {
             System.exit(0);
         }
+
         dude.setWalkingSprites();
         dude.move(ScreenData, N_BLOCKS_Y, N_BLOCKS_X, BLOCK_SIZE, this.getHeight(), this.getWidth());
 
@@ -722,10 +767,29 @@ public class Game extends JPanel implements ActionListener {
 
 
         if (!GameOrFight) {
+
             board.setFightSelector(dude.getIntoFight());
             if (wave!=null && wave.Mobs!=null){
-                wave.populate(board.getW());
-                wave.Move();
+
+                wave.populate(board.getW()+board.getX());
+                wave.Move(dude.getX(),this.getWidth());
+
+               for (Mob m:wave.Mobs){
+                   if(m!=null){
+
+                       if (m.bullets!=null){
+                          if( m.bullets.isEmpty()){
+                              wave.Shoot(m.getX(),m.getY(),dude.getMemoryX(),dude.getMemoryY()+50,m);
+
+                          }
+
+                       }
+                   }
+
+               }
+
+
+                dude.checkHit(wave.Mobs);
 
             }
 
@@ -794,7 +858,11 @@ public class Game extends JPanel implements ActionListener {
                        if(!dude.isAttacking()){
                         dude.setAttack(true);
 
+                           wave.checkHit(dude.getSavedX(),dude.getX(),dude.getWidth());
+
+
                        }
+
                     }
                 }
 
