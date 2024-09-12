@@ -501,37 +501,53 @@ public class Dude {
 			}
 		}
 	}
-	public void checkHit(Mob[] Mobs) {
-		for(int i =0;i<Mobs.length;i++){
-			if(Mobs[i]!=null){
-				if (Mobs[i].getType()==0) {
-					if(Mobs[i].bullets!=null ){
-						if (!Mobs[i].bullets.isEmpty()){
-							for (Bullet b :Mobs[i].bullets){
-								if (b.getX()<this.x+this.w &&( b.getY()+b.getH()>this.y && b.getY()<this.y+this.h) && b.getX()+b.getW()>this.x){
-									if (b.visible){
-										Damaged();
-										b.visible=false;
+	public void checkHit(Mob[] Mobs,Wave wave) {
+		if (!wave.isEnded()){
+			for(int i =0;i<Mobs.length;i++){
+				if(Mobs[i]!=null){
+					if (Mobs[i].getType()==0) {
+						if(Mobs[i].bullets!=null ){
+							if (!Mobs[i].bullets.isEmpty()){
+								for (Bullet b :Mobs[i].bullets){
+									if (b.getX()<this.x+this.w &&( b.getY()+b.getH()>this.y && b.getY()<this.y+this.h) && b.getX()+b.getW()>this.x){
+										if (b.visible){
+											Damaged();
+											b.visible=false;
+
+										}
+										break;
 
 									}
-									break;
-
 								}
 							}
-						}
 
+						}
 					}
+					else if (Mobs[i].getType()==1){
+						if (Mobs[i].getX()+ Mobs[i].getW()/2 - 5 < this.x+this.w && Mobs[i].getX()+ Mobs[i].getW()/2 + 5 > this.x && Mobs[i].getMobAnimPos()==4){
+							Mobs[i].setMobAnimPos(0);
+							Damaged();
+						}
+					}
+
 				}
-				else if (Mobs[i].getType()==1){
-					if (Mobs[i].getX()+ Mobs[i].getW()/2 - 5 < this.x+this.w && Mobs[i].getX()+ Mobs[i].getW()/2 + 5 > this.x && Mobs[i].getMobAnimPos()==4){
-						Mobs[i].setMobAnimPos(0);
+			}
+		}
+		else{
+			if(wave.Boss!=null){
+				this.x+=5;
+				if (wave.Boss.BossMeteor!=null){
+					if ( this.y+this.getHeight() > wave.Boss.BossMeteor.getY() || this.y>wave.Boss.BossMeteor.getY() ){
+						if(this.x+this.getWidth()/2>wave.Boss.BossMeteor.getX() && this.x<wave.Boss.BossMeteor.getX()+wave.Boss.BossMeteor.getW()/2){
+							Damaged();
+						}
+					}
+					if(this.x>wave.Boss.getX()){
 						Damaged();
 					}
 				}
-
 			}
 		}
-
 
 	}
 	public void Bounce(){

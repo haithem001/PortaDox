@@ -32,10 +32,14 @@ public class Mob {
     private boolean on_ground=false;
     private int jump_height=10;
     private int savedY=0;
-    private  ImageIcon A1,A2,B1,B2,B3,B4,B5,Hit,HitL,A1L;
+    private int DamageCounter=0;
+    private  ImageIcon A1,A2,B1,B2,B3,B4,B5,Hit,HitL,A1L,BOSS1,BOSS2,BOSSHIT;
     private int type=-1;
     private int direction=0;
     private int bouncedir=0;
+    private int diry=2;
+    public Bullet BossMeteor ;
+    private boolean damaged=false;
 
     public  Mob (int x, int y,int level,int stop,int type) {
         this.stop=stop;
@@ -73,6 +77,24 @@ public class Mob {
                 this.AnimCount=5;
                 MOB_ANIM_DELAY =13;
                 dir=-12;
+                health=1;
+
+            }
+            if (type == 2)
+             {
+                 this.y=10;
+                 this.x=x;
+                 BOSS1= new ImageIcon("src/Alien Fight Map/BOSS1.png");
+                 BOSS2= new ImageIcon("src/Alien Fight Map/BOSS2.png");
+                 BOSSHIT= new ImageIcon("src/Alien Fight Map/BOSSHIT.png");
+                this.img = new Image[]{BOSS1.getImage(),BOSS2.getImage()};
+                 w=img[0].getWidth(null);
+                 h=img[0].getHeight(null);
+
+                 this.AnimCount=2;
+                 MOB_ANIM_DELAY =20;
+                 dir=-12;
+                 this.health=20;
 
 
             }
@@ -93,7 +115,9 @@ public class Mob {
         if (mobAnimCount <= 0) {
 
             mobAnimCount = MOB_ANIM_DELAY;
-
+            if (damaged){
+                DamageCounter++;
+            }
             mobAnimPos = mobAnimPos + mobAnimDir;
             if (mobAnimPos == (AnimCount - 1) || mobAnimPos == 0) {
 
@@ -189,8 +213,37 @@ public class Mob {
 
             }
         }
+
+
+        else if (type==2){
+            if (x>stop){
+                this.x-=10;
+            }if (y < -10 || y>30){
+                diry=-diry;
+
+
+
+            }
+            y+=diry;
+            if (this.BossMeteor!=null){
+                if (this.getX()<=this.BossMeteor.getX()+this.BossMeteor.getW() && this.BossMeteor.bounced){
+                    this.Damaged();
+                }
+            }
+
+            if (damaged){
+                this.img = new Image[]{BOSS1.getImage(),BOSSHIT.getImage()};
+
+            }
+            if (DamageCounter==5){
+                this.img = new Image[]{BOSS1.getImage(),BOSS2.getImage()};
+                damaged=false;
+                DamageCounter=0;
+            }
+        }
         else{
             this.x+=dir;
+
         }
 
 
@@ -203,8 +256,18 @@ public class Mob {
         return this.type;
     }
     public void shoot(int x, int y, int playerX,int playerY){
-        if (bullets.isEmpty()){
-            bullets.add(new Bullet(x,y,playerX,playerY));
+        if (type==0){
+            if (bullets.isEmpty()){
+                bullets.add(new Bullet(x,y,playerX,playerY,this.type));
+            }
+
+        }if(type ==2 ){
+
+            if (!damaged){
+                BossMeteor=new Bullet(x,y,playerX,playerY,this.type);
+
+            }
+
         }
 
 
@@ -262,7 +325,18 @@ public class Mob {
                     g2.drawImage(this.getImage(4),this.x,this.y,null);
                     break;
             }
+        }else if (type==2){
+            switch (mobAnimPos){
+                case 0:
+                    g2.drawImage(this.getImage(0),this.x,this.y,null);
+                    break;
+                case 1:
+                    g2.drawImage(this.getImage(1),this.x,this.y,null);
+                    break;
+
+            }
         }
+
 
 
 
@@ -271,6 +345,9 @@ public class Mob {
     public void Damaged() {
         this.health-=1;
         stop=this.x;
+        dir=-1;
+        damaged=true;
+
     }
 
     public int getHealth() {
@@ -282,13 +359,30 @@ public class Mob {
     }
 
     public void drawBullets(Graphics2D g2) {
-        for (Bullet b:bullets){
+        if(type==0){
+            for (Bullet b:bullets){
 
-            if(b.visible){
-                  g2.drawImage(b.getImage(),b.getX(),b.getY(),null);
+                if(b.visible){
+                    g2.drawImage(b.getImage(),b.getX(),b.getY(),null);
+
+                }
+            }
+        } else if (type==2) {
+            if(BossMeteor.visible){
+            switch (mobAnimPos){
+
+                case 0:
+                    g2.drawImage(BossMeteor.getImages(0),BossMeteor.x,BossMeteor.y,null);
+                    break;
+                case 1:
+                    g2.drawImage(BossMeteor.getImages(1),BossMeteor.x,BossMeteor.y,null);
+                    break;
 
             }
+            }
+
         }
+
     }
 
     public void setMobAnimPos(int s) {
@@ -309,5 +403,16 @@ public class Mob {
             return true;
         }
         return false;
+    }
+
+    public void DrawHealth(Graphics2D g2) {
+        if(type==2){
+            g2.setColor(Color.darkGray);
+            g2.fillRect(297,7,1006,26);
+
+            g2.setColor(Color.RED);
+            g2.fillRect(300,10,this.health*50,20);
+
+        }
     }
 }

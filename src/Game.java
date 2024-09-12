@@ -329,7 +329,6 @@ public class Game extends JPanel implements ActionListener {
 
             DrawBoard(g2);
             MapAnim();
-            DrawPlayer(g2);
 
                 wave.drawMobs(g2);
                 wave.drawBullets(g2);
@@ -341,6 +340,8 @@ public class Game extends JPanel implements ActionListener {
             if (dude.isDamaged()){
                 doAnim(2);
             }
+            DrawPlayer(g2);
+
             if(dude.isAttacking()){
                 ActAnim();
                 e.setX(dude.x+30);
@@ -384,10 +385,38 @@ public class Game extends JPanel implements ActionListener {
 
     }
     private void DrawTitle(Graphics2D g2d) {
-        if(counterTitle<10){
-            g2d.setFont(pixelfont.deriveFont(Font.BOLD,70));
-            g2d.setColor(new Color(255, 255, 255));
-            g2d.drawString("LEVEL"+wave.getLevel(), this.getWidth()/2-100, this.getHeight()/5);
+        if (!wave.Ends ){
+            if(counterTitle<10){
+                g2d.setFont(pixelfont.deriveFont(Font.BOLD,70));
+                g2d.setColor(new Color(255, 255, 255));
+                g2d.drawString("LEVEL"+wave.getLevel(), this.getWidth()/2-100, this.getHeight()/5);
+
+            }
+        }else {
+            if (counterTitle>40){
+                counterTitle=0;
+            }
+            if (counterTitle <30 && wave.Boss==null) {
+                g2d.setFont(pixelfont.deriveFont(Font.BOLD, 70));
+                switch (mapAnimPos){
+                    case 0:
+
+                        g2d.setColor(new Color(253, 251, 251));
+                        g2d.drawString("MOVE BACK !!", this.getWidth() / 2 -220, this.getHeight() /3);
+                        break;
+                    case 1:
+
+                        g2d.setColor(new Color(209, 12, 12));
+                        g2d.drawString("MOVE BACK !!", this.getWidth() / 2 - 220, this.getHeight() / 3);
+                        break;
+                }
+
+
+            }else if (counterTitle>30 && wave.Boss==null){
+                wave.SpawnBoss(board.getX()+board.getW());
+                wave.Boss.setMobAnimPos(0);
+            }
+
         }
 
     };
@@ -751,7 +780,7 @@ public class Game extends JPanel implements ActionListener {
 
     private void initFight(){
 
-        wave= new Wave(20,100,1,this.Plateform);
+        wave= new Wave(2,100,1,this.Plateform);
 
     }
     @Override
@@ -769,27 +798,42 @@ public class Game extends JPanel implements ActionListener {
         if (!GameOrFight) {
 
             board.setFightSelector(dude.getIntoFight());
+
             if (wave!=null && wave.Mobs!=null){
+                if(!wave.isEnded()){
+                    wave.populate(board.getW()+board.getX());
+                    wave.Move(dude.getX(),this.getWidth());
 
-                wave.populate(board.getW()+board.getX());
-                wave.Move(dude.getX(),this.getWidth());
+                }else{
 
-               for (Mob m:wave.Mobs){
-                   if(m!=null){
+                    wave.Move(dude.getX(),this.getWidth());
 
-                       if (m.bullets!=null){
-                          if( m.bullets.isEmpty()){
-                              wave.Shoot(m.getX(),m.getY(),dude.getMemoryX(),dude.getMemoryY()+50,m);
+                }
+                if(!wave.isEnded()){
+                    for (Mob m:wave.Mobs){
+                        if(m!=null){
 
-                          }
+                            if (m.bullets!=null){
+                                if( m.bullets.isEmpty()){
+                                    wave.Shoot(m.getX(),m.getY(),dude.getMemoryX(),dude.getMemoryY()+50,m);
 
-                       }
-                   }
+                                }
 
-               }
+                            }
+                        }
+
+                    }
+                }else{
+                    if (wave.Boss!=null){
+                        if(wave.Boss.BossMeteor==null){
+                            wave.Shoot(wave.Boss.getX(),wave.Boss.getY()+400,dude.getMemoryX(),dude.getMemoryY()+50,wave.Boss);
+                        }
+                    }
+                }
 
 
-                dude.checkHit(wave.Mobs);
+
+                dude.checkHit(wave.Mobs,wave);
 
             }
 
