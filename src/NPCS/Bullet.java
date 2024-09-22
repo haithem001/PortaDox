@@ -14,9 +14,12 @@ public class Bullet {
     Image img;
     Image[] imgs;
     Image[] imgsR;
+    Image[] imgsP2;
+    Image[] imgsRP2;
 
-    boolean visible;
+    public boolean visible;
     public boolean bounced=false;
+    private boolean changed=false;
 
     public int getH() {
         return h;
@@ -62,9 +65,14 @@ public class Bullet {
             ImageIcon newBullet2 = new ImageIcon("src/Alien Fight Map/M2.png");
             ImageIcon newBullet3 = new ImageIcon("src/Alien Fight Map/M1R.png");
             ImageIcon newBullet4 = new ImageIcon("src/Alien Fight Map/M2R.png");
-
+            ImageIcon newBullet1P2 = new ImageIcon("src/Alien Fight Map/M1P2.png");
+            ImageIcon newBullet2P2 = new ImageIcon("src/Alien Fight Map/M2P2.png");
+            ImageIcon newBullet3P2 = new ImageIcon("src/Alien Fight Map/M1RP2.png");
+            ImageIcon newBullet4P2 = new ImageIcon("src/Alien Fight Map/M2RP2.png");
             imgs = new Image[]{newBullet1.getImage(),newBullet2.getImage()};
             imgsR = new Image[]{newBullet3.getImage(),newBullet4.getImage()};
+            imgsP2 = new Image[]{newBullet1P2.getImage(),newBullet2P2.getImage()};
+            imgsRP2 = new Image[]{newBullet3P2.getImage(),newBullet4P2.getImage()};
 
 
                 Vx=-15;
@@ -95,37 +103,37 @@ public class Bullet {
         return img;
     }
 
-    public Image getImages(int p)
+    public Image getImages(int p,int health)
     {   if(dx>0) {
-        return imgs[p];
+        if (health>=10){
+            return imgs[p];
+
+        }else{
+            return imgsP2[p];
+        }
     }else{
-        return imgsR[p];
+        if (health<10){
+            return imgsRP2[p];
+        }else{
+            return imgsR[p];
+            }
+        }
     }
-    }
-
-
-
-    public void move(int W ,int dx)
+    public void move(int W ,int dx,int health)
     {
         if(type==0){
             x += Vx;
         }else if (type==2){
-
-                x+=Vx;
-
+            if (health<10 && !changed){
+                changed=true;
+                Vx=-40;
+            }
+            x+= Vx;
         }
-
-
         if (x< -100 || x>W){
             visible = false;
-
         }
-
-
-
-
     }
-
     public void setVisible(boolean isVisible)//down
     {
         visible = isVisible;
@@ -133,13 +141,13 @@ public class Bullet {
 
 
     public void BounceBack() {
-        Vx = -Vx;
-        this.dx  = -dx;
-        this.bounced = true;
+        if (type==2){
+            Vx = -Vx;
+            this.dx  = -dx;
+            this.bounced = true;
 
-
+        }
     }
-
     public int getDx() {
         return dx;
     }

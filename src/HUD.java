@@ -20,12 +20,17 @@ public class HUD extends JPanel{
 		private Image img;
 		private Image Heartimg;
 		private Image itemsList;
+		private Image chatBox;
+
 		ImageIcon coin1=new ImageIcon("src/COIN.png");
 		ImageIcon coin2=new ImageIcon("src/COIN1.png");
 		ImageIcon hudimg=new ImageIcon("src/Hud.png");
 		ImageIcon Items=new ImageIcon("src/ItemsList.png");
 		ImageIcon heartimg=new ImageIcon("src/heart.png");
-		
+		ImageIcon ChatBox = new ImageIcon("src/ChatBox.png");
+
+	    ImageIcon LArrow = new ImageIcon("src/ArrowL.png");
+		ImageIcon RArrow = new ImageIcon("src/ArrowR.png");
 		ImageIcon bag=new ImageIcon("src/Bag.png");
 		ImageIcon bagclicked=new ImageIcon("src/BagClicked.png");
 		
@@ -34,7 +39,7 @@ public class HUD extends JPanel{
 			this.Bag[1]=bagclicked.getImage();
 			this.COINS[0]=coin1.getImage();
 			this.COINS[1]=coin2.getImage();
-			
+			this.chatBox=ChatBox.getImage();
 			w = hudimg.getIconWidth();
 			h = hudimg.getIconHeight();
 			
@@ -43,7 +48,7 @@ public class HUD extends JPanel{
 			this.itemsList=Items.getImage();
 		}
 		public String getCoins() {
-			return Integer.toString(coins);
+			return ":"+ Integer.toString(coins);
 		}
 		
 		public void setX(int x) {
@@ -86,6 +91,9 @@ public class HUD extends JPanel{
 		   }
 		public Image getBagImage(int p) {
 	    	return (p==0)? Bag[0]:Bag[1] ;
+	   }
+	   public Image getChatBoxImage() {
+		   return chatBox;
 	   }
 		
 		 

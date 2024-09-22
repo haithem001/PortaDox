@@ -66,4 +66,8 @@ public class Inventory extends JPanel{
 	}
 
 
+    public void equipItem(Item item) {
+		items.addItem(item);
+    }
+
 }

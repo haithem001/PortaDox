@@ -14,7 +14,7 @@ public class Portalo {
 	
 	private Image[] IDOL = new Image[2];
 	private Image[] IDOLL = new Image[2];
-	private String[] Dialog = {"Hello! My name is Portalo \n the guardian of this portal", 
+	private String[] Dialog = {"Hello! My name is Portalo the guardian \n of this portal",
 			"I can only allow you to enter \n if you have a sword",
 			"Sorry i cant allow you to enter",
 			"Hmm! Hou got a sword ,i can allow you now",

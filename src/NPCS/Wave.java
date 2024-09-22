@@ -50,7 +50,7 @@ public class Wave {
     }
     public void SpawnBoss(int W){
         Random rand = new Random();
-        Boss = new Mob(2*W , 20, 1 ,W-100, 2);
+        Boss = new Mob(2*W , 300, 1 ,W+30, 2);
     }
     public void populate(int W){
 
@@ -107,10 +107,10 @@ public class Wave {
                 if (!m.bullets.isEmpty()){
                     for (Bullet B:m.bullets){
                         if(B.visible){
-                            B.move(W,1);
+                            B.move(W,1,3);
 
                         }else {
-                            B.move(W,1);
+                            B.move(W,1,3);
                             if (B.x<0){
                                 m.bullets.remove(B);
                                 break;
@@ -122,16 +122,23 @@ public class Wave {
             }
         }else{
             if (m!=null){
-                if (Boss.BossMeteor!=null) {
-                    if (Boss.BossMeteor.getX() + Boss.BossMeteor.getW() < -100) {
-                        Boss.BossMeteor = null;
+                if (Boss.BossMeteor!=null ) {
+                   if ( Boss.getHealth()>0){
+                       Boss.BossMeteor.move(W, 1,Boss.getHealth());
+
+                       if (Boss.BossMeteor.getX() + Boss.BossMeteor.getW() < -500) {
+                           Boss.BossMeteor = null;
+                       }
+                       else if (Boss.getX()<Boss.BossMeteor.getX()+Boss.BossMeteor.getW() ){
+                           Boss.Damaged();
+                           Boss.BossMeteor=null;
+                       }
+                   }else {
+                       if(Boss.BossMeteor!=null){
+                           Boss.BossMeteor=null;
+                       }
                     }
-                    else if (Boss.getX()<Boss.BossMeteor.getX() ){
-                        Boss.Damaged();
-                        Boss.BossMeteor=null;
-                    }else {
-                        Boss.BossMeteor.move(W, 1);
-                    }
+
 
                 }
             }
@@ -171,7 +178,7 @@ public class Wave {
     public void spawn(){
 
     }
-    public  void drawMobs(Graphics2D g2){
+    public  void drawMobs(Graphics2D g2,Font f,int W){
         if(!Ends){
             for (int i =0;i<Mobs.length;i++){
                 if (Mobs[i]!=null){
@@ -184,7 +191,7 @@ public class Wave {
         }else{
             if (Boss!=null){
                 Boss.DrawMob(g2);
-                Boss.DrawHealth(g2);
+                Boss.DrawHealth(g2,f,W);
                 Boss.UpdateMob();
             }
 
@@ -226,9 +233,11 @@ public class Wave {
             for(int i =0;i<Mobs.length;i++){
                 if(Mobs[i]!=null){
                     if ((Mobs[i].getX()<X+W*2 && Mobs[i].getX()>X && dx>0) || (Mobs[i].getX()>X-W*2 && Mobs[i].getX()+Mobs[i].getW()<X && dx<0)) {
+                        if (Mobs[i].getType()==0){
+                            Mobs[i].Bounce(dx);
+                            Mobs[i].Damaged();
+                        }
 
-                        Mobs[i].Bounce(dx);
-                        Mobs[i].Damaged();
                     }
                     if(Mobs[i].getX()+Mobs[i].getW()<0 && Mobs[i].getType()==1){
                         Mobs[i]=null;
@@ -244,7 +253,7 @@ public class Wave {
         }else{
             if (Boss!=null){
                 if (Boss.BossMeteor!=null){
-                    if ((Boss.BossMeteor.getX()<X+W*2 && Boss.BossMeteor.getX()>X && dx>0)) {
+                    if ((Boss.BossMeteor.getX()<X+2*W && Boss.BossMeteor.getX()>X && dx>0)) {
                         Boss.BossMeteor.BounceBack();
                     }
                 }

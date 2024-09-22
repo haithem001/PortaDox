@@ -1,4 +1,7 @@
-package NPCS;
+import NPCS.Bullet;
+import NPCS.Mob;
+import NPCS.Wave;
+
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
@@ -19,7 +22,7 @@ public class Dude {
 	private boolean stopclimb = true;
 	private int w;
 	private int h;
-	private int health = 5;
+	private int health = 6;
 	private boolean interact = false;
 	private boolean climbing = false;
 	private boolean interactPressed = false;
@@ -32,12 +35,13 @@ public class Dude {
 	private Image[] WLEFT = new Image[2];
 	private Image[] WRIGHTF = new Image[2];
 	private Image[] WLEFTF = new Image[2];
+	private Image[] Health = new Image[6];
 	private int Velocity = 10;
 	public boolean JUMP = false;
 	public boolean on_ground = true;
 	private int jump_height = 18;
 	public int DamageEffect=0;
-
+	private Item selectedItem = null;
 	private boolean bounce=false;
 	private boolean Quit=false;
 	private Image[] Climb = new Image[4];
@@ -47,6 +51,8 @@ public class Dude {
 	public Rectangle solidarea;
 	private boolean allowWalk = false;
 	private boolean damage=false;
+	private boolean trig=false;
+	private int columnSelected=-1;
 
 	public Dude() {
 
@@ -88,6 +94,19 @@ public class Dude {
 		ImageIcon Swalk3 = new ImageIcon("src/PlayerShadowwalk1L.png");
 		ImageIcon Swalk4 = new ImageIcon("src/PlayerShadowwalk2L.png");
 
+		ImageIcon Health6= new ImageIcon("src/Health/1.png");
+		ImageIcon Health5= new ImageIcon("src/Health/2.png");
+		ImageIcon Health4= new ImageIcon("src/Health/3.png");
+		ImageIcon Health3= new ImageIcon("src/Health/4.png");
+		ImageIcon Health2= new ImageIcon("src/Health/5.png");
+		ImageIcon Health1= new ImageIcon("src/Health/6.png");
+		Health[5]= Health6.getImage();
+		Health[4]= Health5.getImage();
+		Health[3]= Health4.getImage();
+		Health[2]= Health3.getImage();
+		Health[1]= Health2.getImage();
+		Health[0]= Health1.getImage();
+
 		this.Climb[0] = climb1.getImage();
 		this.Climb[1] = climb2.getImage();
 		this.Climb[2] = climb3.getImage();
@@ -120,19 +139,34 @@ public class Dude {
 
 		this.x = x;
 	}
-
+	public Image getHealthImage(){
+		if (health>0){
+			return Health[health-1];
+		}
+		return Health[0];
+	}
 	public int gethealth() {
 		return this.health;
 	}
-
 	public void setY(int y) {
 
 		this.y = y;
 	}
 
+	public void setSelectedItem(Item selectedItem) {
+		this.selectedItem=selectedItem;
+	}
+
+	public Item getSelectedItem() {
+		return selectedItem;
+	}
+
 	public int getX() {
 
 		return this.x;
+	}
+	public boolean getTrig(){
+		return trig;
 	}
 
 	public int getY() {
@@ -309,8 +343,51 @@ public class Dude {
 	public boolean isGameOrFight() {
 		return GameOrFight;
 	}
+	public void use_Selected_Item(){
+		if (this.selectedItem.getHeal()!=0){
+
+			switch (this.selectedItem.getId()){
+				case 40:
+
+					this.health += 4;
+					if (health>6){
+						health=6;
+					}
+					this.selectedItem.setExist(false);
+					break;
+				case 41:
+					this.health += 1;
+					if (health>6){
+						health=6;
+					}
+					this.selectedItem.setExist(false);
+
+					break;
+				case 42:
+					this.health += 2;
+					if (health>6){
+						health=6;
+					}
+					this.selectedItem.setExist(false);
+
+					break;
+				case 43:
+					this.health += 3;
+					if (health>6){
+						health=6;
+					}
+					this.selectedItem.setExist(false);
+
+					break;
+			}
+
+		}if(this.selectedItem.getDamage()!=0){
+			this.setAttack(true);
+
+		}
+	}
 	private void PixelsCheck(short[] ScreenData, int nblocks_x, int nblocks_y, int blocksize,int H,int W){
-		System.out.printf("(%d,%d)\n)",this.x, this.y);
+		System.out.printf("(x = %d, y = %d)",this.x, this.y);
 		int pos, Npos, Ppos, Rpos, Upos, UP, LEFT, RIGHT, DOWN;
 		int NextX, NextY, PrevX, PrevY;
 		int ch, Nch, Pch, Uch, Rch;
@@ -333,10 +410,8 @@ public class Dude {
 			Nch = ScreenData[Npos];
 			Uch = ScreenData[Upos];
 			Rch = ScreenData[Rpos];
-			System.out.println("(" + this.x + "," + this.y + ")");
-			System.out.println("pos: " + pos);
-			System.out.println("Nch: " + Nch);
-			System.out.println("ch: " + (ch & 4));
+			System.out.println("pos: " + pos + " Nch: " + Nch+ " ch: " + (ch));
+
 			if ((ch & 1) == 1 && (ch != 0) && (Nch != 0)) {
 				this.x = this.x + (dx * blocksize);
 				this.y = this.y + (dy * blocksize);
@@ -375,6 +450,7 @@ public class Dude {
 					intomap++;
 					this.x = 24;
 
+
 				} else if (intomap == 2) {
 
 					this.x = 24;
@@ -408,10 +484,19 @@ public class Dude {
 					this.dark=false;
 				}
 				else if (intomap ==8) {
-					intomap++;
-					this.x=432;
-					this.y=336;
+					if (this.x<200){
+						intomap++;
+						this.x=432;
+						this.y=336;
+					}else if (this.x>200&& this.y<700){
+						intomap+=2;
+						this.x = 360;
+						this.y = 492;
+					}
 
+
+				}else if (intomap == 10) {
+					interactPressed=false;
 				}
 
 
@@ -456,6 +541,11 @@ public class Dude {
 					this.intomap = 8;
 					this.dark = false;
 				}
+				else if (this.intomap==10){
+					this.x=528;
+					this.y = 84;
+					this.intomap = 8;
+				}
 
 			}
 
@@ -469,11 +559,17 @@ public class Dude {
 
 				}
 				if (interactPressed) {
+
 					interact = true;
+					trig=true;
 
 				}
 				if (pushTalk==false){
-					interact=false;
+
+				}
+				if (intomap==8 && interactPressed){
+
+
 				}
 
 			}
@@ -501,7 +597,10 @@ public class Dude {
 			}
 		}
 	}
-	public void checkHit(Mob[] Mobs,Wave wave) {
+	public boolean getPushtalk(){
+		return pushTalk;
+	}
+	public void checkHit(Mob[] Mobs, Wave wave) {
 		if (!wave.isEnded()){
 			for(int i =0;i<Mobs.length;i++){
 				if(Mobs[i]!=null){
@@ -535,11 +634,15 @@ public class Dude {
 		}
 		else{
 			if(wave.Boss!=null){
-				this.x+=5;
+				if (x<wave.Boss.getX()){
+					this.x+=5;
+
+				}
 				if (wave.Boss.BossMeteor!=null){
 					if ( this.y+this.getHeight() > wave.Boss.BossMeteor.getY() || this.y>wave.Boss.BossMeteor.getY() ){
 						if(this.x+this.getWidth()/2>wave.Boss.BossMeteor.getX() && this.x<wave.Boss.BossMeteor.getX()+wave.Boss.BossMeteor.getW()/2){
 							Damaged();
+							wave.Boss.BossMeteor=null;
 						}
 					}
 					if(this.x>wave.Boss.getX()){
@@ -570,15 +673,15 @@ public class Dude {
 			}
 			else{
 
-				System.out.println(this.x+" , "+this.y);
 				if(x>=36 && x<W){
 					this.x = this.x + dx * 12;
 				}if(x<36){
 					x=36;
 				}
 
-				if (this.y + this.h < 540) {
-					this.Velocity += 1;
+				if (this.y < 530- this.h ) {
+
+					this.Velocity += 3;
 
 					y += this.Velocity;
 					this.JUMP = false;
@@ -592,7 +695,7 @@ public class Dude {
 					this.on_ground = false;
 					this.JUMP = false;
 
-					this.Velocity = -this.jump_height;
+					this.Velocity = -35;
 					this.y += Velocity;
 
 				}
@@ -738,5 +841,16 @@ public class Dude {
 	}
 	public int getMemoryX(){
 		return MemoryX;
+	}
+
+	public void setColumnSelected(int column) {
+		this.columnSelected=column;
+	}
+	public int getColumnSelected(){
+		return this.columnSelected;
+	}
+
+	public void setTrig(boolean b) {
+		this.trig = b;
 	}
 }

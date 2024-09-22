@@ -17,7 +17,7 @@ public class Board {
 	private int y=0;
 	private Image[] image=new Image[2];
 	private Image[] Fimage=new Image[2];
-
+	private boolean ChangeMap =false;
 
 	private Maps M= new Maps();
 
@@ -428,8 +428,19 @@ public class Board {
 		short[] arr = new short[0];
 		Scanner sc = null;
 		try {
-			sc = new Scanner(new FileReader("src/Map" + this.Selector + ".csv"))
-					.useDelimiter("\\\\n\\\\r");
+			if(this.getSelector()!=8){
+				sc = new Scanner(new FileReader("src/Map" + this.Selector + ".csv"))
+						.useDelimiter("\\\\n\\\\r");
+			}else{
+				if(!this.ChangeMap){
+					sc = new Scanner(new FileReader("src/Map" + this.Selector + ".csv"))
+							.useDelimiter("\\\\n\\\\r");
+				}else{
+					sc = new Scanner(new FileReader("src/Map" + this.Selector + "Open.csv"))
+							.useDelimiter("\\\\n\\\\r");
+				}
+			}
+
 		} catch (FileNotFoundException e) {
 			throw new RuntimeException(e);
 		}
@@ -459,6 +470,7 @@ public class Board {
 	}
 
 	public void setSelector(int s) {
+			System.out.println("Map:"+Integer.toString(s));
 			this.Selector=s;
 			ImageIcon map1_1=new ImageIcon("src/Maps/Map"+Integer.toString(this.Selector)+"_1.png");
 			ImageIcon map1_2=new ImageIcon("src/Maps/Map"+Integer.toString(this.Selector)+"_2.png");
@@ -498,9 +510,24 @@ public class Board {
 		return h;
 	}
 	public Image getImage(int p) {
-	        
-	        return image[p];
+			if(this.Selector!=8){
+			return image[p];
+
+		}else{
+				if (!ChangeMap){
+					return image[0];
+
+				}else{
+					return image[1];
+				}
+		}
 	    }
+	public void setChanged(boolean changed) {
+		if ((!this.ChangeMap && Selector == 8 && changed)){
+			this.ChangeMap= true;
+		}
+
+	}
 	public Image getFightImage(int p){
 		return Fimage[p];
 	}

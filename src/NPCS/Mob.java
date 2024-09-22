@@ -22,6 +22,7 @@ public class Mob {
     public Rectangle BODY;
     public List<Bullet> bullets;
     private  Image[] img =new Image[2];
+    private  Image[] imgD =new Image[4];
     private  Image imgExplode;
     private int mobAnimCount =2;
     private int MOB_ANIM_DELAY =20;
@@ -33,7 +34,7 @@ public class Mob {
     private int jump_height=10;
     private int savedY=0;
     private int DamageCounter=0;
-    private  ImageIcon A1,A2,B1,B2,B3,B4,B5,Hit,HitL,A1L,BOSS1,BOSS2,BOSSHIT;
+    private  ImageIcon A1,A2,B1,B2,B3,B4,B5,Hit,HitL,A1L,BOSS1,BOSS2,BOSSHIT,BOSSDIE1,BOSSDIE2,BOSSDIE3,BOSSDIE4;
     private int type=-1;
     private int direction=0;
     private int bouncedir=0;
@@ -69,7 +70,7 @@ public class Mob {
                 B3= new ImageIcon("src/Alien Fight Map/B3.png");
                 B4= new ImageIcon("src/Alien Fight Map/B4.png");
                 B5= new ImageIcon("src/Alien Fight Map/B5.png");
-                this.y-=200;
+                this.y-=230;
                 this.img = new Image[]{B1.getImage(),B2.getImage(),B3.getImage(),B4.getImage(),B5.getImage()};
                 w=img[0].getWidth(null);
                 h=img[0].getHeight(null);
@@ -82,32 +83,25 @@ public class Mob {
             }
             if (type == 2)
              {
-                 this.y=10;
+                 this.y=170;
                  this.x=x;
                  BOSS1= new ImageIcon("src/Alien Fight Map/BOSS1.png");
                  BOSS2= new ImageIcon("src/Alien Fight Map/BOSS2.png");
                  BOSSHIT= new ImageIcon("src/Alien Fight Map/BOSSHIT.png");
-                this.img = new Image[]{BOSS1.getImage(),BOSS2.getImage()};
+                 BOSSDIE1 = new ImageIcon("src/Alien Fight Map/BlackholeDie1.png");
+                 BOSSDIE2 = new ImageIcon("src/Alien Fight Map/BlackholeDie2.png");
+                 BOSSDIE3 = new ImageIcon("src/Alien Fight Map/BlackholeDie3.png");
+                 BOSSDIE4 = new ImageIcon("src/Alien Fight Map/BlackholeDie4.png");
+                 this.imgD = new Image[]{BOSSDIE3.getImage(),BOSSDIE4.getImage()};
+                 this.img = new Image[]{BOSS1.getImage(),BOSS2.getImage()};
                  w=img[0].getWidth(null);
                  h=img[0].getHeight(null);
-
                  this.AnimCount=2;
                  MOB_ANIM_DELAY =20;
                  dir=-12;
                  this.health=20;
-
-
             }
-
-
-
-
-
         }
-
-
-
-
     }
     public void UpdateMob() {
 
@@ -119,11 +113,21 @@ public class Mob {
                 DamageCounter++;
             }
             mobAnimPos = mobAnimPos + mobAnimDir;
-            if (mobAnimPos == (AnimCount - 1) || mobAnimPos == 0) {
+            if (type!=2){
+                if (mobAnimPos == (AnimCount - 1) || mobAnimPos == 0) {
+                    mobAnimDir = -mobAnimDir;
 
-                mobAnimDir = -mobAnimDir;
+                }
+            }else if (type==2){
+
+                    if (mobAnimPos == (AnimCount - 1) || mobAnimPos == 0) {
+                        mobAnimDir = -mobAnimDir;
+
+                    }
+
 
             }
+
         }
 
     }
@@ -131,7 +135,16 @@ public class Mob {
         return dy;
     }
     public Image getImage(int p) {
-        return this.img[p];
+        if (type == 2) {
+            if (health>0){
+                return this.img[p];
+
+            }else{
+                return this.imgD[p];
+            }
+        }else{
+                return this.img[p];
+        }
     }
     public Image getImgExplode() {
         return imgExplode;
@@ -164,8 +177,6 @@ public class Mob {
                 this.on_ground = false;
                 this.Velocity = -this.jump_height;
                 this.y += Velocity;
-
-
             }
             if(!on_ground){
                 if (this.y+this.h  < savedY) {
@@ -185,26 +196,20 @@ public class Mob {
                     }else{
                         this.img = new Image[]{A1L.getImage(),HitL.getImage()};
                     }
-
-
                 } else {
 
                     on_ground = true;
                     this.img = new Image[]{A1.getImage(),A2.getImage()};
-
                 }
             }
             else{
-
                 if (x>stop){
                     this.x+=dir;
                     this.img = new Image[]{A1.getImage(),A2.getImage()};
-
                 }
                 else{
                     if(this.direction<0){
                         this.img = new Image[]{A1.getImage(),A1.getImage()};
-
                     }else{
                         this.img = new Image[]{A1L.getImage(),A1L.getImage()};
                     }
@@ -212,17 +217,11 @@ public class Mob {
                 }
 
             }
-        }
-
-
-        else if (type==2){
+        } else if (type==2){
             if (x>stop){
                 this.x-=10;
-            }if (y < -10 || y>30){
+            }if (y < 150 || y>190){
                 diry=-diry;
-
-
-
             }
             y+=diry;
             if (this.BossMeteor!=null){
@@ -230,16 +229,15 @@ public class Mob {
                     this.Damaged();
                 }
             }
-
             if (damaged){
                 this.img = new Image[]{BOSS1.getImage(),BOSSHIT.getImage()};
-
             }
-            if (DamageCounter==5){
+            if (DamageCounter==10){
                 this.img = new Image[]{BOSS1.getImage(),BOSS2.getImage()};
                 damaged=false;
                 DamageCounter=0;
             }
+
         }
         else{
             this.x+=dir;
@@ -262,11 +260,13 @@ public class Mob {
             }
 
         }if(type ==2 ){
+            if (this.health>0){
+                if (!damaged){
+                    BossMeteor=new Bullet(x,y,playerX,playerY,this.type);
 
-            if (!damaged){
-                BossMeteor=new Bullet(x,y,playerX,playerY,this.type);
-
+                }
             }
+
 
         }
 
@@ -326,15 +326,18 @@ public class Mob {
                     break;
             }
         }else if (type==2){
-            switch (mobAnimPos){
-                case 0:
-                    g2.drawImage(this.getImage(0),this.x,this.y,null);
-                    break;
-                case 1:
-                    g2.drawImage(this.getImage(1),this.x,this.y,null);
-                    break;
+            if (this.getHealth()>=0){
+                switch (mobAnimPos){
+                    case 0:
+                        g2.drawImage(this.getImage(0),this.x,this.y,null);
+                        break;
+                    case 1:
+                        g2.drawImage(this.getImage(1),this.x,this.y,null);
+                        break;
 
+                }
             }
+
         }
 
 
@@ -347,6 +350,10 @@ public class Mob {
         stop=this.x;
         dir=-1;
         damaged=true;
+        if (this.health<0){
+            mobAnimPos=0;
+            MOB_ANIM_DELAY=50;
+        }
 
     }
 
@@ -369,13 +376,13 @@ public class Mob {
             }
         } else if (type==2) {
             if(BossMeteor.visible){
-            switch (mobAnimPos){
+                switch (mobAnimPos){
 
                 case 0:
-                    g2.drawImage(BossMeteor.getImages(0),BossMeteor.x,BossMeteor.y,null);
+                    g2.drawImage(BossMeteor.getImages(0,getHealth()),BossMeteor.x,BossMeteor.y,null);
                     break;
                 case 1:
-                    g2.drawImage(BossMeteor.getImages(1),BossMeteor.x,BossMeteor.y,null);
+                    g2.drawImage(BossMeteor.getImages(1,getHealth()),BossMeteor.x,BossMeteor.y,null);
                     break;
 
             }
@@ -405,14 +412,15 @@ public class Mob {
         return false;
     }
 
-    public void DrawHealth(Graphics2D g2) {
+    public void DrawHealth(Graphics2D g2,Font font,int W) {
         if(type==2){
-            g2.setColor(Color.darkGray);
-            g2.fillRect(297,7,1006,26);
 
             g2.setColor(Color.RED);
-            g2.fillRect(300,10,this.health*50,20);
+            g2.fillRect(W/2,35,this.health*20,14);
 
+            g2.setFont(font.deriveFont(Font.BOLD,20));
+            g2.setColor(Color.white);
+            g2.drawString(Integer.toString(this.health*5)+"%",(W/2)-50,46);
         }
     }
 }

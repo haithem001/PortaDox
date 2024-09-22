@@ -55,21 +55,21 @@ public class Effect {
             switch (effectAnimPos){
                 case 0:
                     g.drawImage(item.getImage(dx),this.x-10,this.y-20,null);
-                    g.drawImage(this.Images[0],this.x +50,this.y-10,this.w,this.h,null);
+                    g.drawImage(this.Images[0],this.x +55,this.y-10,this.w,this.h,null);
                     break;
                 case 1:
                      angle = 30;
                     g.rotate(Math.toRadians(angle), this.x - this.w / 2, this.y + this.h / 2);
                     g.drawImage(item.getImage(dx),this.x-10,this.y-20,null);
                     g.rotate(Math.toRadians(-angle), this.x - this.w / 2, this.y + this.h / 2);
-                    g.drawImage(this.Images[1],this.x+50,this.y-10,this.w,this.h,null);
+                    g.drawImage(this.Images[1],this.x+55,this.y-10,this.w,this.h,null);
                     break;
                 case 2:
                     angle = 45;
                     g.rotate(Math.toRadians(angle), this.x - this.w / 2, this.y + this.h / 2);
                     g.drawImage(item.getImage(dx),this.x-10,this.y-20,null);
                     g.rotate(Math.toRadians(-angle), this.x - this.w / 2, this.y + this.h / 2);
-                    g.drawImage(this.Images[2],this.x+50,this.y-10,this.w,this.h,null);
+                    g.drawImage(this.Images[2],this.x+55,this.y-10,this.w,this.h,null);
                     break;
 
                 default:break;
@@ -79,7 +79,7 @@ public class Effect {
             switch (effectAnimPos){
                 case 0:
                     g.drawImage(item.getImage(dx),this.x-50,this.y,null);
-                    g.drawImage(this.Images[3],this.x-60,this.y,this.w,this.h,null);
+                    g.drawImage(this.Images[3],this.x-65,this.y,this.w,this.h,null);
                 break;
                 case 1:
                     angle = -30;
@@ -87,7 +87,7 @@ public class Effect {
                     g.drawImage(item.getImage(dx),this.x-50,this.y,null);
                     g.rotate(Math.toRadians(-angle), this.x + this.w / 2, this.y + this.h / 2);
 
-                    g.drawImage(this.Images[4],this.x-60,this.y,this.w,this.h,null);
+                    g.drawImage(this.Images[4],this.x-65,this.y,this.w,this.h,null);
                 break;
                 case 2:
                     angle = -60;
@@ -95,7 +95,7 @@ public class Effect {
 
                     g.drawImage(item.getImage(dx),this.x-50,this.y,null);
                     g.rotate(Math.toRadians(-angle), this.x + this.w / 2, this.y + this.h / 2);
-                    g.drawImage(this.Images[5],this.x-60,this.y,this.w,this.h,null);
+                    g.drawImage(this.Images[5],this.x-65,this.y,this.w,this.h,null);
                 break;
                 default:break;
             }

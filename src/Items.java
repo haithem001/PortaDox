@@ -15,13 +15,13 @@ public class Items extends JComponent{
 
 
 				{
-					new Item(1,10,0,0,false,false ,x		      ,y),
-					new Item(60,20,0,0,false,false,205       ,y),
-					new Item(40,0,20,0,false,false,205+gapX  ,y),
-					new Item(0,0,0,0,false,false ,205+2*gapX,y),
-					new Item(0,0,0,0,false,false ,205+3*gapX,y),
-					new Item(0,0,0,0,false,false ,205+4*gapX,y),
-					new Item(0,0,0,0,false,false ,205+5*gapX,y),
+					new Item(1,1,0,0,false,true ,125		 ,y),
+					new Item(60,0,0,0,false,true,205       ,y),
+					new Item(40,0,4,0,false,true,205+gapX  ,y),
+					new Item(41,0,3,0,false,true ,205+2*gapX,y),
+					new Item(42,0,2,0,false,true ,205+3*gapX,y),
+					new Item(43,0,1,0,false,true ,205+4*gapX,y),
+					new Item(2,0,0,0,false,true ,205+5*gapX,y),
 				}
 
 				,{
@@ -110,7 +110,15 @@ public class Items extends JComponent{
 			System.out.println(" ");
 		}
 	}
+	public void remove_item(int i,int j){
+		list_items[i][j].setExist(false);
+		list_items[i][j].setId(0);
+		list_items[i][j].setHeal(0);
+		list_items[i][j].setShield(0);
+		list_items[i][j].setFunctional(false);
+		list_items[i][j].setDamage(0);
 
+	}
 		public int GetCenterItemX(int i,int j) {
 			Item item =list_items[i][j];
             return item.getX() + item.getW() / 2;
@@ -221,6 +229,32 @@ public class Items extends JComponent{
 		public void ItemExistence( int i, int j , boolean b){
 			list_items[i][j].setExist(b);
 		}
-		
+
+	public void  addItem(Item item) {
+		int k =0;
+		int l=0;
+		boolean stop=false;
+
+
+		for(int i = 0 ;i<rows-1;i++) {
+			for (int j = 0; j < columns; j++) {
+				if (list_items[i][j].getId() == 0) {
+					k=i;
+					l=j;
+
+					break;
+
+				}
+
+			}
+		}
+		list_items[k][l].setId(item.getId());
+		list_items[k][l].setHeal(item.getHeal());
+		list_items[k][l].setShield(item.getShield());
+		list_items[k][l].setFunctional(item.isFunctional());
+		list_items[k][l].setDamage(item.getDamage());
+		list_items[k][l].setExist(true);
+
+	}
 }
 
