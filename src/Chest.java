@@ -8,7 +8,7 @@ public class Chest {
     private Image[] image=new Image[2];
     private boolean Empty;
     public Item item;
-
+    private int map=0;
     Chest(int x,int y,int map){
         this.x=x;
         this.y=y;
@@ -21,21 +21,18 @@ public class Chest {
         h=image[0].getHeight(null);
         open=false;
         Empty=false;
-        if(map==1){
+        if (map==1){
+            item=new Item(40,0,4,0,false,true,this.getX(),this.getY());
 
-            item=new Item(40,0,3,0,false,true,this.getX(),this.getY());
-
-        }else if(map==10){
-
+        }else if (map==10){
             item=new Item(1,10,0,0,false,true,this.getX(),this.getY());
 
         }
 
 
-    }
-    public void loadChest(){
 
     }
+
 
     public int getX() {
         return x;
@@ -51,8 +48,8 @@ public class Chest {
     public Image getImage(){
         return image[open?1:0];
     }
-    public void BounceItem(){
-                item.bounceItem();
+    public void BounceItem(int dx){
+                item.bounceItem(dx);
     }
     public void equipItems(Item item){
                 this.item=item;

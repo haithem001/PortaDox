@@ -15,6 +15,7 @@ public class Dude {
 	private int dy,MemoryX,MemoryY;
 	public int x;
 	public int y;
+	public int Plateform;
 	private boolean pushTalk =false;
 	private boolean stopwalk;
 	private int lastdir;
@@ -44,7 +45,7 @@ public class Dude {
 	private Item selectedItem = null;
 	private boolean bounce=false;
 	private boolean Quit=false;
-	private Image[] Climb = new Image[4];
+	private Image[] Climb = new Image[2];
 	private Image[] Swalk = new Image[2];
 	private Image[] SwalkL = new Image[2];
 	private boolean dark = false;
@@ -53,9 +54,11 @@ public class Dude {
 	private boolean damage=false;
 	private boolean trig=false;
 	private int columnSelected=-1;
-
+	private boolean win=false;
+	private boolean Action=false;
+	public int level=1;
+	private int Levels =0;
 	public Dude() {
-
 		loadPlayerIms();
 
 	}
@@ -80,6 +83,7 @@ public class Dude {
 		ImageIcon ii2 = new ImageIcon("src/Player2.png");
 		ImageIcon ii3 = new ImageIcon("src/player1L.png");
 		ImageIcon ii4 = new ImageIcon("src/Player2L.png");
+
 		this.WRIGHT[0] = ii1.getImage();
 		this.WRIGHT[1] = ii2.getImage();
 		this.WLEFT[0] = ii3.getImage();
@@ -87,8 +91,7 @@ public class Dude {
 
 		ImageIcon climb1 = new ImageIcon("src/playerClimb1.png");
 		ImageIcon climb2 = new ImageIcon("src/playerClimb2.png");
-		ImageIcon climb3 = new ImageIcon("src/playerClimb3.png");
-		ImageIcon climb4 = new ImageIcon("src/playerClimb4.png");
+
 		ImageIcon Swalk1 = new ImageIcon("src/PlayerShadowwalk1.png");
 		ImageIcon Swalk2 = new ImageIcon("src/PlayerShadowwalk2.png");
 		ImageIcon Swalk3 = new ImageIcon("src/PlayerShadowwalk1L.png");
@@ -109,8 +112,6 @@ public class Dude {
 
 		this.Climb[0] = climb1.getImage();
 		this.Climb[1] = climb2.getImage();
-		this.Climb[2] = climb3.getImage();
-		this.Climb[3] = climb4.getImage();
 
 
 		this.Swalk[0] = Swalk1.getImage();
@@ -120,6 +121,7 @@ public class Dude {
 
 		w = WRIGHT[0].getWidth(null);
 		h = WRIGHT[0].getHeight(null);
+		this.Plateform=530 - this.h;
 
 	}
 	public boolean isQuit() {
@@ -166,7 +168,9 @@ public class Dude {
 		return this.x;
 	}
 	public boolean getTrig(){
+
 		return trig;
+
 	}
 
 	public int getY() {
@@ -221,6 +225,14 @@ public class Dude {
 
 
 
+	}
+
+	public void setAction(boolean action) {
+		Action = action;
+	}
+	public boolean getAction() {
+
+		return Action;
 	}
 
 	public void setDark(boolean dark) {
@@ -344,47 +356,50 @@ public class Dude {
 		return GameOrFight;
 	}
 	public void use_Selected_Item(){
-		if (this.selectedItem.getHeal()!=0){
+		if (this.selectedItem!=null){
+			if (this.selectedItem.getHeal()!=0){
 
-			switch (this.selectedItem.getId()){
-				case 40:
+				switch (this.selectedItem.getId()){
+					case 40:
 
-					this.health += 4;
-					if (health>6){
-						health=6;
-					}
-					this.selectedItem.setExist(false);
-					break;
-				case 41:
-					this.health += 1;
-					if (health>6){
-						health=6;
-					}
-					this.selectedItem.setExist(false);
+						this.health += 4;
+						if (health>6){
+							health=6;
+						}
+						this.selectedItem.setExist(false);
+						break;
+					case 41:
+						this.health += 1;
+						if (health>6){
+							health=6;
+						}
+						this.selectedItem.setExist(false);
 
-					break;
-				case 42:
-					this.health += 2;
-					if (health>6){
-						health=6;
-					}
-					this.selectedItem.setExist(false);
+						break;
+					case 42:
+						this.health += 2;
+						if (health>6){
+							health=6;
+						}
+						this.selectedItem.setExist(false);
 
-					break;
-				case 43:
-					this.health += 3;
-					if (health>6){
-						health=6;
-					}
-					this.selectedItem.setExist(false);
+						break;
+					case 43:
+						this.health += 3;
+						if (health>6){
+							health=6;
+						}
+						this.selectedItem.setExist(false);
 
-					break;
+						break;
+				}
+
+			}if(this.selectedItem.getDamage()!=0){
+				this.setAttack(true);
+
 			}
-
-		}if(this.selectedItem.getDamage()!=0){
-			this.setAttack(true);
-
 		}
+
 	}
 	private void PixelsCheck(short[] ScreenData, int nblocks_x, int nblocks_y, int blocksize,int H,int W){
 		System.out.printf("(x = %d, y = %d)",this.x, this.y);
@@ -469,8 +484,7 @@ public class Dude {
 						this.dark = true;
 					}
 				} else if (intomap == 4) {
-					this.x = 396;
-					this.y = 20;
+					this.y = 48;
 					intomap++;
 
 				} else if (intomap == 6) {
@@ -517,6 +531,10 @@ public class Dude {
 					this.x = 720;
 					intomap--;
 				}
+				if (intomap == 5) {
+					this.y=504;
+					intomap--;
+				}
 				if (intomap == 6) {
 					this.x = 324;
 					this.y = 480;
@@ -547,6 +565,7 @@ public class Dude {
 					this.intomap = 8;
 				}
 
+
 			}
 
 			if ((ch & 2) == 2 && (ch != 0) && (Nch != 0)) {
@@ -561,7 +580,6 @@ public class Dude {
 				if (interactPressed) {
 
 					interact = true;
-					trig=true;
 
 				}
 				if (pushTalk==false){
@@ -573,29 +591,38 @@ public class Dude {
 				}
 
 			}
+			if ((ch & 8) == 8 && (ch != 0) && (Nch != 0)) {
+
+				this.x = this.x + (dx * blocksize);
+				this.y = this.y + (dy * blocksize);
+				if (trig){
+					Action = true;
+				}
+
+
+			}
 			if ((ch & 9) == 9 && (ch != 0) && (Nch != 0)) {
 				climbing = true;
 				walking = false;
 				pushTalk=false;
-				if ((Nch & 5) == 5) {
-					if (intomap == 4) {
+				GameOrFight=true;
+				this.y = this.y + (dy * blocksize);
 
-						this.y = 24;
-						intomap++;
-					}
-				}
-				if ((Nch & 6) == 6) {
-					if (intomap == 5) {
 
-						interact = false;
-						interactPressed=false;
-						this.y = 480;
-						intomap--;
-					}
-					this.y = this.y + (dy * blocksize);
-				}
+
 			}
 		}
+	}
+	public void setWin(boolean win){
+		if ( this.win ){
+			if (this.intomap==11){
+				this.setX(204);
+				this.setY(348);
+				this.win = win;
+
+			}
+		}
+
 	}
 	public boolean getPushtalk(){
 		return pushTalk;
@@ -656,6 +683,20 @@ public class Dude {
 	public void Bounce(){
 		this.bounce=true;
 	}
+	public void checkWin(Mob Boss,int px){
+		if (Boss!=null){
+			if (Boss.getHealth()<1){
+				if(this.x>px){
+					this.Fight=false;
+					this.GameOrFight=true;
+					intomap=11;
+					intofight=0;
+					win=true;
+
+				}
+			}
+		}
+	}
 	public void Damaged(){
 		this.damage=true;
 
@@ -669,39 +710,41 @@ public class Dude {
 
 			if (GameOrFight){
 				PixelsCheck( ScreenData,  nblocks_x,  nblocks_y,  blocksize, H, W);
-
 			}
-			else{
+			else {
 
-				if(x>=36 && x<W){
+				if ( x >= 36 && x < W ) {
 					this.x = this.x + dx * 12;
-				}if(x<36){
-					x=36;
 				}
 
-				if (this.y < 530- this.h ) {
+				if ( x < 36 ) {
+					this.x = 36;
+				}
 
-					this.Velocity += 3;
-
-					y += this.Velocity;
+// Gravity effect
+				if ( this.y < 530 - this.h ) {
+					this.Velocity +=5; // Increase downward velocity (falling)
+					this.y += this.Velocity; // Apply velocity to vertical position
 					this.JUMP = false;
-
 				} else {
-
-					on_ground = true;
+					// Ensure object lands on the ground and velocity is reset
+					this.y = 530 - this.h; // Object stays on the ground
+					this.Velocity = 0;
+					this.on_ground = true; // Object is on the ground
 				}
 
-				if (this.JUMP) {
+				if ( this.JUMP && this.on_ground ) {
+					// If jump is triggered and the object is on the ground, allow the jump
 					this.on_ground = false;
 					this.JUMP = false;
-
-					this.Velocity = -35;
-					this.y += Velocity;
+					this.Velocity = -40; // Set upward velocity for the jump
+					this.y += this.Velocity; // Apply initial jump velocity
 
 				}
+
 			}
-			this.MemoryX=x;
-			this.MemoryY=y;
+		this.MemoryX=x;
+		this.MemoryY=y;
 	}
 	public void setPushTalk(boolean x){
 		this.pushTalk=x;
@@ -737,6 +780,10 @@ public class Dude {
 			interactPressed = true;
 
 		}
+		if(key== KeyEvent.VK_E){
+			trig=true;
+
+		}
 		if (key == KeyEvent.VK_SPACE) {
 			JUMP=true;
 
@@ -764,14 +811,18 @@ public class Dude {
 
 
 		}
+		else if(key== KeyEvent.VK_E){
+			trig=false;
+
+		}
 		else if (key == KeyEvent.VK_Z) {
 			dy = 0;
 			stopwalk = true;
 		}
 
-		else if (key == KeyEvent.VK_S) {
-			dy = 0;
-			stopwalk = true;
+		if (key == KeyEvent.VK_S) {
+
+			dy = 0;	stopwalk = true;
 		}
 	}
 	public boolean isDamaged(){
@@ -794,10 +845,30 @@ public class Dude {
 		ImageIcon HitL=new ImageIcon("src/PHITL.png");
 
 		if (GameOrFight){
-			this.WRIGHT[0] = ii1.getImage();
-			this.WRIGHT[1] = ii2.getImage();
-			this.WLEFT[0] = ii3.getImage();
-			this.WLEFT[1] = ii4.getImage();
+			switch (level){
+				case 1:
+					this.WRIGHT[0] = ii1.getImage();
+					this.WRIGHT[1] = ii2.getImage();
+					this.WLEFT[0] = ii3.getImage();
+					this.WLEFT[1] = ii4.getImage();
+					break;
+				case 2:
+
+
+
+				ImageIcon ii11 = new ImageIcon("src/Player11.png");
+				ImageIcon ii12 = new ImageIcon("src/Player12.png");
+				ImageIcon ii13 = new ImageIcon("src/Player11L.png");
+				ImageIcon ii14 = new ImageIcon("src/Player12L.png");
+
+				this.WRIGHT[0] = ii11.getImage();
+				this.WRIGHT[1] = ii12.getImage();
+				this.WLEFT[0] = ii13.getImage();
+				this.WLEFT[1] = ii14.getImage();
+				break;
+
+			}
+
 		}else{
 			if (damage) {
 				this.WRIGHT[0] = ii1F.getImage();
@@ -852,5 +923,9 @@ public class Dude {
 
 	public void setTrig(boolean b) {
 		this.trig = b;
+	}
+
+	public boolean isWin() {
+		return win;
 	}
 }

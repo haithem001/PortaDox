@@ -29,6 +29,7 @@ public class Game extends JPanel implements ActionListener {
     public Board board;
     public Dude dude;
     public Wave wave;
+
     public HUD hud;
     public Inventory inventory;
     public boolean GameOrFight = true;
@@ -52,11 +53,8 @@ public class Game extends JPanel implements ActionListener {
     private InteractionPanel faces;
     private Timer timer;
     private Animations anim;
-    private Princess princess;
     private Buildo buildo;
-    private Portalo portalo;
-    private King king;
-    private Sello sello;
+
     private Graphics2D G;
     private int DIALOGUE_ANIM_COUNT = 2;
     private int dialogueAnimCount = DIALOGUE_ANIM_DELAY;
@@ -70,7 +68,8 @@ public class Game extends JPanel implements ActionListener {
     private int counterTitle = 0;
     private Chest chest;
     private int selected_item_column = -1;
-    private Chest chest1;
+    private Chest[] chests=new Chest[2];
+    private NPCS Idols;
 
     public Game() {
 
@@ -113,22 +112,21 @@ public class Game extends JPanel implements ActionListener {
         hud.setX(90);
         hud.setY(680);
 
-        sello = new Sello();
-        portalo = new Portalo();
-        buildo = new Buildo();
 
-        chest = new Chest(100, 330, 10);
-        chest1 = new Chest(100, 290, 1);
-        king = new King();
+        buildo = new Buildo();
+        Idols= new NPCS();
+
+        chests = new Chest[]{
+                new Chest(100, 360, 1),
+                new Chest(100, 330, 10)
+        };
+
+        chest=new Chest(0,0,0);
+
         dude = new Dude();
 
-        princess = new Princess();
         board = new Board();
-        if ( GameOrFight ) {
-            board.setSelector(dude.getIntoMap());
-        } else {
-            board.setFightSelector(dude.getIntoFight());
-        }
+
 
         dude.setX(252);
         dude.setY(252);
@@ -187,23 +185,23 @@ public class Game extends JPanel implements ActionListener {
     }
 
 
-    private void dodialogAnim() {
-        if ( dude.getInteract() ) {
-            dialogueAnimCount--;
-            if ( dialogueAnimCount <= 0 ) {
-                dialogueAnimCount = DIALOGUE_ANIM_DELAY;
-                dialogueAnimPos = dialogueAnimPos + dialogueAnimDir;
-                if ( dialogueAnimPos == (DIALOGUE_ANIM_COUNT) ) {
-                    dialogueAnimPos = 0;
-                    dude.setPushTalk(false);
-                    dude.setInteract(false);
-                    dude.setTalkmessage(false);
-                }
-            }
+//    private void dodialogAnim() {
+//        if ( dude.getInteract() ) {
+//            dialogueAnimCount--;
+//            if ( dialogueAnimCount <= 0 ) {
+//                dialogueAnimCount = DIALOGUE_ANIM_DELAY;
+//                dialogueAnimPos = dialogueAnimPos + dialogueAnimDir;
+//                if ( dialogueAnimPos == (DIALOGUE_ANIM_COUNT) ) {
+//                    dialogueAnimPos = 0;
+//                    dude.setPushTalk(false);
+//                    dude.setInteract(false);
+//                    dude.setTalkmessage(false);
+//                }
+//            }
+//
+//        }
 
-        }
-
-    }
+   // }
 
     private void MapAnim() {
         if ( GameOrFight ) {
@@ -259,12 +257,14 @@ public class Game extends JPanel implements ActionListener {
         if ( GameOrFight ) {
             DrawBoard(g2);
             MapAnim();
+
             g2.drawImage(hud.getChatBoxImage(), board.getX()+board.getW() +20, board.getY()+350,this);
+            g2.drawImage(hud.getArrowL(),board.getX()+board.getW() +58, board.getY()+670,this);
+            g2.drawImage(hud.getArrowR(),board.getX()+board.getW() +458, board.getY()+670,this);
 
             if ( board.getSelector() == 9 ) {
                 DrawNPC(g2);
-                princess.setX(310);
-                princess.setY(340);
+
                 DrawInteraction(g2);
                 DIALOGUE_ANIM_COUNT = 2;
 
@@ -274,28 +274,36 @@ public class Game extends JPanel implements ActionListener {
                 DrawNPC(g2);
                 DrawInteraction(g2);
 
-                sello.setX(220);
-                sello.setY(230);
+
                 DIALOGUE_ANIM_COUNT = 1;
+            }
+            if (board.getSelector()==11){
+                    dude.level=2;
+                    DrawNPC(g2 );
+                    DrawInteraction(g2);
+
+
+                    DIALOGUE_ANIM_COUNT = 2;
+
             }
 
             if ( board.getSelector() == 1 ) {
 
-                chest1.setX(100);
-                chest1.setY(290);
 
+                if (this.wave!=null){
+                    g2.drawImage(wave.GetPortalImage(false,mapAnimPos),0,0,this);
 
-                g2.drawImage(chest1.getImage(), chest1.getX(), chest1.getY(), this);
+                }
+                g2.drawImage(chests[0].getImage(), chests[0].getX(), chests[0].getY(), this);
 
-                if ( chest1.isOpen() ) {
-                    if ( chest1.item != null ) {
-                        g2.drawImage(chest1.item.getImage(1), chest1.item.getX(), chest1.item.getY(), this);
+                if ( chests[0].isOpen() ) {
+                    if ( chests[0].item != null ) {
+                        g2.drawImage(chests[0].item.getImage(1), chests[0].item.getX(), chests[0].item.getY(), this);
 
                     }
                 }
                 DrawNPC(g2);
-                portalo.setX(400);
-                portalo.setY(200);
+
                 DrawInteraction(g2);
                 DIALOGUE_ANIM_COUNT = 2;
 
@@ -304,16 +312,36 @@ public class Game extends JPanel implements ActionListener {
             if ( board.getSelector() == 10 ) {
 
 
-                king.setX(550);
-                king.setY(250);
+
+                if (! Idols.Characters.get(10).isGiveItem()) {
+                    Idols.Characters.get(10).setX(550);
+                    Idols.Characters.get(10).setY(250);
+
+                }
+                if (Idols.Characters.get(10).getItem()!=null){
+                        g2.drawImage(Idols.Characters.get(10).getItemImage(),Idols.Characters.get(10).getItem().getX(),Idols.Characters.get(10).getItem().getY(), this);
+
+
+                }
+
                 DrawNPC(g2);
-                chest.setX(100);
-                chest.setY(330);
-                g2.drawImage(chest.getImage(), chest.getX(), chest.getY(), this);
+
+
+                g2.drawImage(chests[1].getImage(), chests[1].getX(), chests[1].getY(), this);
 
                 DrawInteraction(g2);
 
+                if ( chests[1].isOpen() ) {
+                    if ( chests[1].item != null ) {
+                        g2.drawImage(chests[1].item.getImage(1), chests[1].item.getX(), chests[1].item.getY(), this);
+
+                    }
+                }
                 DIALOGUE_ANIM_COUNT = 2;
+
+
+            }
+            if (board.getSelector()==11){
 
 
             }
@@ -335,7 +363,8 @@ public class Game extends JPanel implements ActionListener {
 
             if ( dude.isClimbing() ) {
 
-                doAnim(4);
+                doAnim(2);
+                doAnim(2);
 
             } else if ( dude.isWalking() ) {
 
@@ -373,6 +402,8 @@ public class Game extends JPanel implements ActionListener {
             if ( dude.isDamaged() ) {
                 doAnim(2);
             }
+            DrawTitle(g2);
+
             DrawPlayer(g2);
 
             if ( dude.isAttacking() ) {
@@ -387,7 +418,6 @@ public class Game extends JPanel implements ActionListener {
 
 
             DrawHUD(g2);
-            DrawTitle(g2);
             repaint();
 
             /*if(board.getFightSelector() == 1) {DrawEnemies(g2); }*/
@@ -420,7 +450,16 @@ public class Game extends JPanel implements ActionListener {
                 g2d.setFont(pixelfont.deriveFont(Font.BOLD, 70));
                 g2d.setColor(new Color(255, 255, 255));
                 g2d.drawString("LEVEL" + wave.getLevel(), this.getWidth() / 2 - 100, this.getHeight() / 5);
+                wave.Px-=1;
 
+                switch (mapAnimPos){
+                    case 0:
+                        g2d.drawImage(wave.GetPortalImage(wave.isEnded(),0),wave.Px,board.getY(),this);
+                        break;
+                    case 1:
+                        g2d.drawImage(wave.GetPortalImage(wave.isEnded(),1),wave.Px,board.getY(),this);
+                        break;
+                }
             }
         } else {
             if ( counterTitle > 40 ) {
@@ -430,7 +469,6 @@ public class Game extends JPanel implements ActionListener {
                 g2d.setFont(pixelfont.deriveFont(Font.BOLD, 70));
                 switch (mapAnimPos) {
                     case 0:
-
                         g2d.setColor(new Color(253, 251, 251));
                         g2d.drawString("MOVE BACK !!", this.getWidth() / 2 - 220, this.getHeight() / 3);
                         break;
@@ -449,6 +487,44 @@ public class Game extends JPanel implements ActionListener {
 
         }
 
+        if (wave.Boss != null) {
+            if (wave.Boss.getHealth()<=0){
+
+               if(wave.Px<0 ) {
+                   wave.Px=this.getWidth();
+
+
+
+
+
+                }
+                 else if(wave.Px>this.getWidth()-400) {
+                    wave.Px--;
+
+
+
+                }
+
+
+
+
+                switch (mapAnimPos){
+                    case 0:
+                        g2d.drawImage(wave.GetPortalImage(wave.isEnded(),0),wave.Px,board.getY(),this);
+                        break;
+                    case 1:
+                        g2d.drawImage(wave.GetPortalImage(wave.isEnded(),1),wave.Px,board.getY(),this);
+                        break;
+
+
+                }
+
+
+
+
+            }
+        }
+
     }
 
     ;
@@ -465,6 +541,7 @@ public class Game extends JPanel implements ActionListener {
 
 
         g2d.drawImage(hud.getCoinImage(0), hud.getX() + 25, hud.getY() + 50, this);
+        g2d.setFont(pixelfont.deriveFont(Font.BOLD, 35));
 
         g2d.drawString(hud.getCoins(), hud.getX() + 46, hud.getY() + 69);
 
@@ -493,8 +570,10 @@ public class Game extends JPanel implements ActionListener {
 
     private void DrawInteractions(Graphics2D g2d) {
 
-        if ( board.getSelector() == 1 ) {
-            if ( dude.getInteract() && dude.getX() > 300 ) {
+        if ( board.getSelector() == 1 || board.getSelector() == 2 ||
+                board.getSelector() == 9 ||
+                board.getSelector() == 10 || board.getSelector()==11) {
+            if ( dude.getInteract()  ) {
                 switch (mapAnimPos) {
                     case 0:
                         g2d.drawImage(faces.getImage(1), faces.getX(), faces.getY(), this);
@@ -516,165 +595,72 @@ public class Game extends JPanel implements ActionListener {
 
 
         }
-        if ( board.getSelector() == 2 ) {
-            if ( dude.getInteract() ) {
-                switch (mapAnimPos) {
-                    case 0:
-                        g2d.drawImage(faces.getImage(1), faces.getX(), faces.getY(), this);
-                        break;
-                    case 1:
-                        g2d.drawImage(faces.getImage(0), faces.getX(), faces.getY(), this);
-                        break;
 
-                    default:
-                        g2d.drawImage(faces.getImage(0), faces.getX(), faces.getY(), this);
-
-                }
-
-
-            } else {
-                g2d.drawImage(faces.getImage(0), faces.getX(), faces.getY(), this);
-            }
-        }
-        if ( board.getSelector() == 9 ) {
-            if ( dude.getInteract() ) {
-                switch (mapAnimPos) {
-                    case 0:
-                        g2d.drawImage(faces.getImage(1), faces.getX(), faces.getY(), this);
-                        break;
-                    case 1:
-                        g2d.drawImage(faces.getImage(0), faces.getX(), faces.getY(), this);
-                        break;
-
-                    default:
-                        g2d.drawImage(faces.getImage(0), faces.getX(), faces.getY(), this);
-
-                }
-
-
-            } else {
-                g2d.drawImage(faces.getImage(0), faces.getX(), faces.getY(), this);
-            }
-        }
-        if ( board.getSelector() == 10 ) {
-            if ( dude.getInteract() && dude.getX() > 400 ) {
-                switch (mapAnimPos) {
-                    case 0:
-                        g2d.drawImage(faces.getImage(1), faces.getX(), faces.getY(), this);
-                        break;
-                    case 1:
-                        g2d.drawImage(faces.getImage(0), faces.getX(), faces.getY(), this);
-                        break;
-
-                    default:
-                        g2d.drawImage(faces.getImage(0), faces.getX(), faces.getY(), this);
-
-                }
-
-
-            } else {
-                g2d.drawImage(faces.getImage(0), faces.getX(), faces.getY(), this);
-            }
-        }
         this.repaint();
     }
 
     private void DrawInteraction(Graphics2D g2d) {
 
         // HUD placement
-        g2d.setFont(pixelfont.deriveFont(Font.BOLD, 30));
-        g2d.setColor(Color.white);
+
 
         int x = faces.getX() + - 50;
         int y = faces.getY() + faces.getH() + 150;
 
-        if ( dude.getInteract() && dude.getIntoMap() == 1 && dude.getX() > 300 ) {
+        if ( dude.getInteract()  ) {
 
-            dodialogAnim();
+
+            g2d.setFont(pixelfont.deriveFont(Font.BOLD, 40));
+            switch (board.getSelector()) {
+                case 1:
+                    g2d.setColor(new Color(190, 149, 196));
+                    break;
+                case 2:
+                    g2d.setColor(new Color(255, 215, 157));
+                    break;
+                case 9:
+                    g2d.setColor(new Color(255, 151, 147));
+                    break;
+                case 10:
+                    g2d.setColor(new Color(255, 170, 0));
+                    break;
+
+            }
+            g2d.drawString(Idols.Characters.get(board.getSelector()).getName(), x, y-57);
+            g2d.setColor(Color.white);
+            g2d.setFont(pixelfont.deriveFont(Font.BOLD, 30));
+
             switch (dialogueAnimPos) {
                 case 0:
-                    for ( String line : portalo.loadDialogue(0).split("\n") ) {
+
+
+                    for ( String line :Idols.Dialog.get(board.getSelector())[0][0].split("\n") ) {
                         g2d.drawString(line, x, y);
                         y = y + 30;
                     }
 
                     break;
                 case 1:
-                    for ( String line : portalo.loadDialogue(1).split("\n") ) {
+                    for ( String line : Idols.Dialog.get(board.getSelector())[0][1].split("\n") ) {
                         g2d.drawString(line, x, y);
                         y = y + 30;
+                    }
+                    if(Idols.Characters.get(board.getSelector()).getName()=="Moustachio IX"){
+                        Idols.Characters.get(board.getSelector()).setGiveItem(true);
                     }
 
             }
             if ( dialogueAnimPos == dialogueAnimCount ) {
                 dude.setInteract(false);
-                for ( String line : portalo.loadDialogue(5).split("\n") ) {
+                for ( String line : Idols.Dialog.get(board.getSelector())[0][0].split("\n") ) {
                     g2d.drawString(line, x, y);
                     y = y + 30;
                 }
             }
         }
-        if ( dude.getInteract() && dude.getIntoMap() == 2 ) {
-            dodialogAnim();
-            switch (dialogueAnimPos) {
-                case 0:
-                    for ( String line : sello.loadDialogue(0).split("\n") ) {
-                        g2d.drawString(line, x, y);
-                        y = y + 30;
-                    }
 
-                    break;
-                case 1:
-                    for ( String line : sello.loadDialogue(1).split("\n") ) {
-                        g2d.drawString(line, x, y);
-                        y = y + 30;
-                    }
 
-            }
-            if ( dialogueAnimPos == dialogueAnimCount ) {
-                dude.setInteract(false);
-                for ( String line : sello.loadDialogue(5).split("\n") ) {
-                    g2d.drawString(line, x, y);
-                    y = y + 30;
-                }
-            }
-        }
-        if ( dude.getInteract() && dude.getIntoMap() == 9 ) {
-            dodialogAnim();
-            switch (dialogueAnimPos) {
-                case 0:
-                    for ( String line : princess.loadDialogue(0).split("\n") ) {
-                        g2d.drawString(line, x, y);
-                        y = y + 30;
-                    }
 
-                    break;
-                case 1:
-                    for ( String line : princess.loadDialogue(1).split("\n") ) {
-                        g2d.drawString(line, x, y);
-                        y = y + 30;
-                    }
-
-            }
-        }
-        if ( dude.getInteract() && dude.getIntoMap() == 10 && dude.getX() > 450 ) {
-            dodialogAnim();
-            switch (dialogueAnimPos) {
-                case 0:
-                    for ( String line : king.loadDialogue(0).split("\n") ) {
-                        g2d.drawString(line, x, y);
-                        y = y + 30;
-                    }
-
-                    break;
-                case 1:
-                    for ( String line : king.loadDialogue(1).split("\n") ) {
-                        g2d.drawString(line, x, y);
-                        y = y + 30;
-                    }
-
-            }
-        }
 
     }
 
@@ -687,12 +673,7 @@ public class Game extends JPanel implements ActionListener {
 
         int x = 400;
         int y = 500;
-        if ( dude.isPushTalk() ) {
-            g2d.drawString("( Press F )", x, y);
-        } else {
 
-
-        }
 
 
     }
@@ -711,20 +692,35 @@ public class Game extends JPanel implements ActionListener {
     }
 
     private void DrawBoard(Graphics2D g2d) {
+
+        Color fillColor = new Color(0, 0, 0, 165);
         if ( !GameOrFight ) {
             switch (mapAnimPos) {
                 case 0:
-                    g2d.drawImage(board.getFightImage(0), board.getX() + 30, board.getY(), this);
+                    g2d.drawImage(board.getFightImage(0), 0 , board.getY(), this);
+                    g2d.setColor(fillColor);
+                    g2d.fillRect(0,0,this.getWidth(),this.getHeight());
+                    g2d.drawImage(wave.GetSurface(0), 0 , dude.Plateform+dude.getHeight(), this);
+
                     break;
                 case 1:
-                    g2d.drawImage(board.getFightImage(1), board.getX() + 30, board.getY(), this);
+                    g2d.drawImage(board.getFightImage(1), 0, board.getY(), this);
+
+                    g2d.setColor(fillColor);
+                    g2d.fillRect(0,0,this.getWidth(),this.getHeight());
+                    g2d.drawImage(wave.GetSurface(1), 0 , dude.Plateform+dude.getHeight(), this);
+
                     break;
 
 
                 default:
-                    g2d.drawImage(board.getFightImage(0), board.getX() + 30, board.getY(), this);
+                    g2d.drawImage(wave.GetSurface(1), 0 , dude.Plateform+dude.getHeight(), this);
+                    g2d.setColor(fillColor);
+                    g2d.fillRect(0,0,this.getWidth(),this.getHeight());
+                    g2d.drawImage(board.getFightImage(0), 0 , board.getY(), this);
 
             }
+
         } else {
             if ( board.getSelector() != 8 ) {
                 switch (mapAnimPos) {
@@ -740,7 +736,7 @@ public class Game extends JPanel implements ActionListener {
 
                 }
             } else {
-                board.setChanged(dude.getTrig());
+                board.setChanged(dude.getTrig(),board.getSelector());
                 g2d.drawImage(board.getImage(0), board.getX(), board.getY(), this);
             }
         }
@@ -815,52 +811,27 @@ public class Game extends JPanel implements ActionListener {
     }
 
     private void DrawNPC(Graphics2D NPCG) {
-        // playerArea.setColor(Color.blue);
-        // playerArea.fillRect(X, Y, dude.solidarea.width, dude.solidarea.height);
-        if ( board.getSelector() == 1 ) {
-            switch (mapAnimPos) {
-                case 0:
-                    NPCG.drawImage(portalo.getImage(0, dude.getX()), portalo.getX(), portalo.getY(), this);
-                    if ( dude.getX() > 400 ) {
-                        NPCG.drawImage(faces.getImage(0), faces.getX(), faces.getY(), this);
 
-                    }
+        Npc idol=Idols.Characters.get(board.getSelector());
+        if (idol!=null){
+            NPCG.drawImage(idol.getImage(),idol.getX(), idol.getY(), this);
 
-                    break;
-                case 1:
-                    NPCG.drawImage(portalo.getImage(1, dude.getX()), portalo.getX(), portalo.getY(), this);
-
-                    if ( dude.getX() > 400 ) {
-                        NPCG.drawImage(faces.getImage(1), faces.getX(), faces.getY(), this);
-
-                    }
-
-                    break;
-
-                default:
-                    NPCG.drawImage(portalo.getImage(0, dude.getX()), portalo.getX(), portalo.getY(), this);
-            }
         }
         if ( board.getSelector() == 2 ) {
-            NPCG.drawImage(sello.getImage(), sello.getX(), sello.getY(), this);
-            NPCG.drawImage(sello.getMarketImage(), sello.getX() + 75, sello.getY(), this);
+            NPCG.drawImage(Idols.Characters.get(2).getMarketImage(), idol.getX() + 75, idol.getY(), this);
         }
         if ( board.getSelector() == 4 ) {
             NPCG.drawImage(buildo.getImage(), buildo.getX(), buildo.getY(), this);
         }
-        if ( board.getSelector() == 9 ) {
-            NPCG.drawImage(princess.getImage(), princess.getX(), princess.getY(), this);
-        }
-        if ( board.getSelector() == 10 ) {
-            NPCG.drawImage(king.getImage(), king.getX(), king.getY(), this);
-        }
+
+
 
     }
 
 
     private void initFight() {
 
-        wave = new Wave(2, 100, 1, this.Plateform);
+        wave = new Wave(6, 100, 1, this.Plateform);
 
     }
 
@@ -872,11 +843,13 @@ public class Game extends JPanel implements ActionListener {
 
         dude.setWalkingSprites();
         GameOrFight = dude.isGameOrFight();
-        dude.move(ScreenData, N_BLOCKS_Y, N_BLOCKS_X, BLOCK_SIZE, this.getHeight(), this.getWidth());
+        if (dude.isWin()){
+            dude.setWin(false);
+        }
 
-        if ( !GameOrFight ) {
+        if ( !GameOrFight && !dude.isWin()) {
 
-            board.setFightSelector(dude.getIntoFight());
+
 
             if ( wave != null && wave.Mobs != null ) {
                 if ( !wave.isEnded() ) {
@@ -918,6 +891,21 @@ public class Game extends JPanel implements ActionListener {
                     }
                 }
 
+                dude.checkWin(wave.Boss,wave.Px);
+                GameOrFight = dude.isGameOrFight();
+
+                if (!dude.isWin()){
+                    board.setFightSelector(dude.getIntoFight());
+
+                }else{
+
+                    board.setSelector(dude.getIntoMap());
+
+
+                }
+
+
+
 
                 dude.checkHit(wave.Mobs, wave);
 
@@ -928,34 +916,40 @@ public class Game extends JPanel implements ActionListener {
 
             board.setSelector(dude.getIntoMap());
             initMap();
+            faces.setSelector(board.getSelector());
 
-            if ( board.getSelector() == 2 ) {
-                faces.setSelector(2);
-            }
-            if ( dude.getTrig() && dude.getIntoMap() == 1 && dude.getX() < 250 ) {
-                chest1.setOpen(true);
+            if ( dude.getAction() && dude.getIntoMap() == 1 && dude.getX() < 250 ) {
+                chests[0].setOpen(true);
                 dude.setTrig(false);
+                dude.setAction(false);
             }
             if ( board.getSelector() == 1 ) {
-                faces.setSelector(1);
-                if ( chest1.isOpen() ) {
-                    if ( chest1.item != null ) {
-                        chest1.BounceItem();
+                if ( chests[0].isOpen() ) {
+                    if (chests[0].item != null ) {
+                        chests[0].BounceItem(15);
                     }
                 }
             }
-            if ( board.getSelector() == 9 ) {
-                faces.setSelector(3);
-            }
-            if ( board.getSelector() == 10 ) {
-                faces.setSelector(4);
-            }
-            if ( dude.getInteract() && dude.getIntoMap() == 10 && dude.getX() < 300 && dude.getSelectedItem() != null ) {
-                if ( dude.getSelectedItem().getId() == 60 ) {
-                    chest.setOpen(true);
-                    dude.setTrig(false);
 
-                    chest.BounceItem();
+            if ( board.getSelector() == 10 ) {
+                if (Idols.Characters.get(10).getItem()!=null){
+                    Idols.Characters.get(10).getItem().bounceItem(-15);
+
+                }
+                if ( chests[1].isOpen() ) {
+                    if ( chests[1].item != null ) {
+                        chests[1].BounceItem(15);
+                    }
+                }
+            }
+            if ( dude.getAction() && dude.getIntoMap() == 10 && dude.getX() < 300 && dude.getSelectedItem() != null ) {
+                if ( dude.getSelectedItem().getId() == 60 ) {
+                    chests[1].setOpen(true);
+                    dude.setTrig(false);
+                    dude.setAction(false);
+
+
+                    chests[1].BounceItem(15);
                     inventory.items.remove_item(4, selected_item_column);
                     selected_item_column = -1;
 
@@ -967,6 +961,8 @@ public class Game extends JPanel implements ActionListener {
 
 
         }
+        dude.move(ScreenData, N_BLOCKS_Y, N_BLOCKS_X, BLOCK_SIZE, this.getHeight(), this.getWidth());
+
 
     }
 
@@ -981,21 +977,49 @@ public class Game extends JPanel implements ActionListener {
                 int y = (int) (pos.y / 1.1);
                 //hud.getX()+ 625, hud.getY()+6
                 if ( y <= hud.getY() && !hud.GetInventoryOpen() ) {
-                    if ( chest1.getItem() != null ) {
-                        int ItemX = chest1.getItem().getX();
-                        int ItemY = chest1.getItem().getY();
-                        int ItemW = chest1.getItem().getW();
-                        if ( x >= ItemX && x <= ItemX + ItemW && y >= ItemY && y <= ItemY + ItemW && chest1.isOpen() ) {
-                            if ( chest1.getItem() != null ) {
-                                inventory.equipItem(chest1.getItem());
-                                chest1.removeItem();
+                    if ( chests[0].getItem() != null ) {
+                        int ItemX = chests[0].getItem().getX();
+                        int ItemY = chests[0].getItem().getY();
+                        int ItemW = chests[0].getItem().getW();
+                        if ( x >= ItemX && x <= ItemX + ItemW && y >= ItemY && y <= ItemY + ItemW && chests[0].isOpen() ) {
+                            if ( chests[0].getItem() != null ) {
+
+                                inventory.equipItem(chests[0].getItem());
+                                chests[0].removeItem();
                             }
                         }
-                    } else {
+                    }
+                    if ( Idols.Characters.get(10).getItem() != null ) {
+                        int ItemX = Idols.Characters.get(10).getItem().getX();
+                        int ItemY = Idols.Characters.get(10).getItem().getY();
+                        int ItemW = Idols.Characters.get(10).getItem().getW();
+                        if ( x >= ItemX && x <= ItemX + ItemW && y >= ItemY && y <= ItemY + ItemW  ) {
+                                inventory.equipItem(Idols.Characters.get(10).getItem());
+                                Idols.Characters.get(10).removeItem();
+
+
+
+                        }
+                    }
+                    if ( chests[1].getItem() != null ) {
+                        int ItemX = chests[1].getItem().getX();
+                        int ItemY = chests[1].getItem().getY();
+                        int ItemW = chests[1].getItem().getW();
+                        if ( x >= ItemX && x <= ItemX + ItemW && y >= ItemY && y <= ItemY + ItemW && chests[1].isOpen() ) {
+                            if ( chests[1].getItem() != null ) {
+
+                                inventory.equipItem(chests[1].getItem());
+                                chests[1].removeItem();
+                                Idols.Characters.get(1).setAllowing(true);
+                                board.setChanged(dude.getTrig(),board.getSelector());
+
+                            }
+                        }
+                    }
 
                         dude.use_Selected_Item();
 
-                    }
+
 
 
                 }
@@ -1059,6 +1083,23 @@ public class Game extends JPanel implements ActionListener {
 
                 int y = (int) (pos.y / 1.1);
 
+                if (x > board.getX()+board.getW()+58 && x< board.getX()+board.getW() +83 && y>board.getY()+670 &&y<board.getY()+705){
+
+                    Dialogue(-1);
+                }
+                if (x> board.getX()+board.getW() +458&& x<board.getX()+board.getW() +458+25 && board.getY()+670<y && y<board.getY()+705){
+                    Dialogue(1);
+
+                }
+
+            }
+
+            private void Dialogue(int dir){
+                if(dialogueAnimPos<Idols.Dialog.get(board.getSelector())[0].length-1 && dialogueAnimPos>=0){
+                        dialogueAnimPos+=dir;
+                }else{
+                    dialogueAnimPos=0;
+                }
             }
 
             @Override

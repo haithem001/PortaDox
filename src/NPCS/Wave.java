@@ -1,10 +1,14 @@
 package NPCS;
 
+import javax.swing.*;
 import java.awt.*;
 import java.util.Random;
 
 public class Wave {
-
+    public Image[] PortalBegin = new Image[2];
+    public Image[] PortalEnd = new Image[2];
+    public Image[] Surface = new Image[2];
+    public int Px=0;
     public Mob[] Mobs;
     public boolean Ends=false;
     int level;
@@ -13,7 +17,7 @@ public class Wave {
     public float spawnInterval;
     private float[] mobSpawnTimes;
     public Mob Boss;
-    int currentTime;
+    public int currentTime;
     private int Deads=0;
     private int Alive=0;
 
@@ -28,7 +32,24 @@ public class Wave {
         mobSpawnTimes = new float[npcCount];
         Alive=count;
         generateRandomSpawnCounters();
+         PortalBegin[0] =new ImageIcon("src/Alien Fight Map/Portal0.png").getImage();
+         PortalBegin[1] =new ImageIcon("src/Alien Fight Map/Portal1.png").getImage();
+         PortalEnd  [0] =new ImageIcon("src/Alien Fight Map/Portal0L.png").getImage();
+         PortalEnd  [1] =new ImageIcon("src/Alien Fight Map/Portal1L.png").getImage();
+         Surface[0] =new ImageIcon("src/Alien Fight Map/surface1.png").getImage();
+         Surface[1] =new ImageIcon("src/Alien Fight Map/surface2.png").getImage();
+         Px=-40;
 
+    }
+    public Image GetSurface(int selector){
+        return Surface[selector];
+    }
+    public Image GetPortalImage(boolean TBFE ,int selector){
+        if (!TBFE)
+
+            return PortalBegin[selector];
+        else
+            return PortalEnd[selector];
     }
     private void generateRandomSpawnCounters() {
         Random rand = new Random();
@@ -50,7 +71,7 @@ public class Wave {
     }
     public void SpawnBoss(int W){
         Random rand = new Random();
-        Boss = new Mob(2*W , 300, 1 ,W+30, 2);
+        Boss = new Mob(2*W , 300, 1 ,W-150, 2);
     }
     public void populate(int W){
 
@@ -62,7 +83,7 @@ public class Wave {
            count();
            if (npcCount > 1 ) {
                int r = rand.nextInt(2);
-               Mobs[Mobs.length - npcCount] = new Mob(rand.nextInt(300)+2*W, Plateform - 45, 1 ,W+rand.nextInt(100), r);
+               Mobs[Mobs.length - npcCount] = new Mob(rand.nextInt(300)+2*W, Plateform - 45, 1 ,W+rand.nextInt(400), r);
            }
 
        }
@@ -243,7 +264,8 @@ public class Wave {
                         Mobs[i]=null;
                         Deads++;
                     }
-                    if(Mobs[i].getHealth()<=0 && Mobs[i].isOnGround() ){
+
+                    else if(Mobs[i].getHealth()<=0 && Mobs[i].isOnGround() && Mobs[i].getType()==0 ){
                         Deads++;
                         Mobs[i]=null;
                     }

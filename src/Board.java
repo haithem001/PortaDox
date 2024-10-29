@@ -428,7 +428,7 @@ public class Board {
 		short[] arr = new short[0];
 		Scanner sc = null;
 		try {
-			if(this.getSelector()!=8){
+			if(this.getSelector()!=8 && this.getSelector()!=1){
 				sc = new Scanner(new FileReader("src/Map" + this.Selector + ".csv"))
 						.useDelimiter("\\\\n\\\\r");
 			}else{
@@ -440,6 +440,7 @@ public class Board {
 							.useDelimiter("\\\\n\\\\r");
 				}
 			}
+
 
 		} catch (FileNotFoundException e) {
 			throw new RuntimeException(e);
@@ -522,8 +523,11 @@ public class Board {
 				}
 		}
 	    }
-	public void setChanged(boolean changed) {
-		if ((!this.ChangeMap && Selector == 8 && changed)){
+	public void setChanged(boolean changed, int boardSelector) {
+		if ((!this.ChangeMap && boardSelector == 8 && changed)){
+			this.ChangeMap= true;
+		}
+		if ((!this.ChangeMap && boardSelector == 1 && changed)){
 			this.ChangeMap= true;
 		}
 

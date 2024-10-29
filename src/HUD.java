@@ -21,7 +21,7 @@ public class HUD extends JPanel{
 		private Image Heartimg;
 		private Image itemsList;
 		private Image chatBox;
-
+		private Image ArrowR,ArrowL;
 		ImageIcon coin1=new ImageIcon("src/COIN.png");
 		ImageIcon coin2=new ImageIcon("src/COIN1.png");
 		ImageIcon hudimg=new ImageIcon("src/Hud.png");
@@ -42,7 +42,8 @@ public class HUD extends JPanel{
 			this.chatBox=ChatBox.getImage();
 			w = hudimg.getIconWidth();
 			h = hudimg.getIconHeight();
-			
+			this.ArrowL=LArrow.getImage();
+			this.ArrowR=RArrow.getImage();
 			this.img=hudimg.getImage();
 			this.Heartimg=heartimg.getImage();
 			this.itemsList=Items.getImage();
@@ -95,6 +96,10 @@ public class HUD extends JPanel{
 	   public Image getChatBoxImage() {
 		   return chatBox;
 	   }
-		
-		 
+	   public Image getArrowL() {
+		   return ArrowL;
+	   }
+	   public Image getArrowR() {
+           return ArrowR;
+       }
 }

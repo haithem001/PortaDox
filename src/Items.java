@@ -15,8 +15,8 @@ public class Items extends JComponent{
 
 
 				{
-					new Item(1,1,0,0,false,true ,125		 ,y),
-					new Item(60,0,0,0,false,true,205       ,y),
+					new Item(1,10,0,0,false,true ,125		 ,y),
+					new Item(0,0,0,0,false,true,205       ,y),
 					new Item(40,0,4,0,false,true,205+gapX  ,y),
 					new Item(41,0,3,0,false,true ,205+2*gapX,y),
 					new Item(42,0,2,0,false,true ,205+3*gapX,y),

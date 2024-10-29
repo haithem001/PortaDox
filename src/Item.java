@@ -43,7 +43,7 @@ public class Item extends JComponent{
 			w=image.getWidth(null); 
 			h=image.getHeight(null);
 		
-		this.inity=this.y;
+		this.inity=this.y+15;
 		
 	}
 	
@@ -130,7 +130,7 @@ public class Item extends JComponent{
 		return shield;
 	}
 
-	public void bounceItem(){
+	public void bounceItem(int dx){
 		if(!this.bounce && onground){
 			this.bounce=true;
 			this.onground=false;
@@ -140,7 +140,7 @@ public class Item extends JComponent{
 		if(!onground){
 			this.Velocity += 3;
 			y += this.Velocity;
-			this.x+=15;
+			this.x+=dx;
 			y+=Velocity;
 			if (this.y>=this.inity){
 				this.y=this.inity;

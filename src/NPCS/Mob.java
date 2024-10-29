@@ -99,7 +99,7 @@ public class Mob {
                  this.AnimCount=2;
                  MOB_ANIM_DELAY =20;
                  dir=-12;
-                 this.health=20;
+                 this.health=14;
             }
         }
     }
@@ -346,13 +346,19 @@ public class Mob {
     }
 
     public void Damaged() {
-        this.health-=1;
+        if (this.getType()==2){
+            this.health-=10;
+
+        }else{
+            this.health--;
+        }
         stop=this.x;
         dir=-1;
         damaged=true;
         if (this.health<0){
             mobAnimPos=0;
             MOB_ANIM_DELAY=50;
+            this.alive=false;
         }
 
     }
